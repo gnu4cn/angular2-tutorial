@@ -2,10 +2,8 @@
 TRIES=4
 
 push () {
-    git add *.*
-    git add .gitignore
-    git add sass/*.scss
-    git add app/*.ts
+    git add *.md
+    git add git-push.sh
     git commit -m "$1"
     push_success=0
     push_tries=0
