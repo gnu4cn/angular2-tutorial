@@ -5,6 +5,7 @@ push () {
     git add *.md
     git add git-push.sh
     git add images/*.png
+    git add images/*.gif
     git commit -m "$1"
     push_success=0
     push_tries=0
