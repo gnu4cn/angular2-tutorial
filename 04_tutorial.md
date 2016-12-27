@@ -24,7 +24,7 @@
 
 这里有一个本教程中我们将要经历的视觉概念，以"Dashboard"视图及最为英勇的英雄开始：
 
-![英雄dashboard](images/heroes-dashboard.png)
+![英雄dashboard](images/heroes-dashboard-1.png)
 
 在看板的上面部分，是两个链接（"Dashboard"及"Heroes"）。可通过对它们进行点击，来在看板与多英雄视图之间导航。
 
