@@ -20,5 +20,30 @@
 
 请运行[现场示例](https://angular.io/resources/live-examples/toh-6/ts/eplnkr.html)。
 
+## 最终效果
+
+这里有一个本教程中我们将要经历的视觉概念，以"Dashboard"视图及最为英勇的英雄开始：
+
+![英雄dashboard](images/heroes-dashboard.png)
+
+在看板的上面部分，是两个链接（"Dashboard"及"Heroes"）。可通过对它们进行点击，来在看板与多英雄视图之间导航。
+
+此外，在点击名为“Magneta”的看板英雄之后，路由器（the router）将带着我们前往到该英雄的“Hero Details”的视图，那里可修改英雄的名字。
+
+![英雄详细信息](images/hero-details-1.png)
+
+此时点击“Back”按钮，将会把我们带回到“Dashboard”。顶部的链接则可分别将我们带至两个主要视图（the main views）。在点击“Heroes”时，该应用将前往“Heroes”主清单视图（the "Heroes" master list view）。
+
+![英雄清单](images/heroes-list-2.png)
+
+在点击不同英雄时，主清单下的那个只读的小型详情（the readonly mini-detail），将反应所选条目。
+
+在点击只读的小型详情中的“View Details”按钮时，就会进入到所选英雄的可编辑详情组件。
+
+![导航图示](images/nav-diagram.png)
+
+下面是运作中的应用：
+
+![运作中的应用](images/toh-anim.gif)
 
 
