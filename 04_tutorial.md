@@ -211,5 +211,83 @@ export class AppModule { }
 将`<input>`用以下HTML进行替换：
 
 ```html
+<input [(ngModel)]="hero.name" placeholder="name">
+```
+
+浏览器将刷新。我们将再度看到英雄。可以对英雄的名字加以修改，并在`<h2>`元素中立即观看到修改的反映。
+
+### 历程（The Road We've Travelled）
+
+这里要把已经建立的内容，进行盘点一下：
+
++ 英雄之旅应用使用了双花括符的插值（一种单向数据绑定的方式，*译者注：那么还有其它类型的插值了*，the double curly braces of interpolation, a kind of one-way data binding），来现实应用的标题及`Hero`对象的属性。
++ 这里使用ES2015的模板字符串，编写了一个多行模板，来令到这里的模板具有更高的可读性。
++ 在使用内建的`ngModel`指令，加入了双向数据绑定到`<input>`元素后，就可以同时显示并修改英雄的名字了。
++ 该`ngModel`指令还可以将修改传播到所有其它的`hero.name`的绑定（the `ngModel` directive also propagates changes to every binding of the `hero.name`）。
 
 
+下面是现在完整的`app.component.ts`:
+
+```typescript
+import { Component } from '@angular/core';
+
+export class Hero {
+    id: number;
+    name: string;
+}
+
+@Component({
+    selector: 'my-app',
+    template: `
+        <h1>{{title}}</h1>
+        <h2>{{hero.name}} details!</h2>
+        <div><label>id: </label>{{hero.id}}</div>
+        <md-input-container>
+            <input md-input id="name" [(ngModel)]="hero.name" placeholder="名 字" />
+        </md-input-container>
+    `,
+})
+export class AppComponent {
+    title = 'Tour of Heroes';
+    hero: Hero = {
+        id: 1,
+        name: 'Windstorm'
+    };
+}
+```
+
+**注：** 这里使用了 Angular 2 的Material，所以与原来有所不同。
+
+### 前面的路
+
+现在的应用仅显示一个英雄，但我们实际上是要显示一个英雄清单。同时要允许用户从清单中选择一个英雄并显示其详细信息。因此就要学习更多的如何来获取清单、将其绑定到模板，并允许用户来选择一个英雄。
+
+## 主清单/详细信息模式（Master/Detail）
+
+这里将要使用一个英雄清单，来构建一个主清单/详细信息的页面（build a master/detail page with a list of heroes）。
+
+故事需要更多英雄。这里将把英雄应用，扩展为显示一个英雄清单、允许用户选择一个英雄，并显示该英雄的详细信息。
+
+可允许这部分的[现场示例](https://angular.io/resources/live-examples/toh-2/ts/eplnkr.html)。
+
+先来看看我们需要些什么来显示一个英雄的清单。首先，需要一个英雄清单。我们打算在视图模板（the view's template）中显示出这些英雄，那么就需要某种完成完成的方法。
+
+### 上次留下的（Where We Left Off）
+
+在继续英雄之旅的第二部分之前，我们先来检查一下下面第一部分完成后的文件结构。如不是下面这样，就要回到第一部分，找出那些遗失掉的文件。
+
+![文件机构-第一部分](images/file-structure-part-I.png)
+
+### 让应用保持transpiling及运行
+
+我们想要启动TypeScript编译器，让其监视文件变化，并启动服务器。通过敲入下面的命令来完成这个操作：
+
+```bash
+npm start
+```
+
+该命令将在我们持续构建英雄之旅应用是，保持应用的运行。
+
+### 显示我们的英雄
+
+#### 
