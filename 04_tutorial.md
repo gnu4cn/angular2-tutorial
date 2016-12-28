@@ -1063,4 +1063,31 @@ export class AppModule { }
 
 ## 服务（Services）
 
+本章将建立一个可重用的服务，来管理我们的英雄数据调用。
+
+英雄之旅应在一直进化，同时我们也期望在不久的将来，加入到更多的组件进来。
+
+现在有多个组件将需要对英雄数据进行访问，而我们不打算一次次地拷贝和粘贴同样的代码。相反，我们要建立一个可重用的数据服务，并学会将其注入到需要该服务的组件中。
+
+把数据访问重构为一个单独的服务，可以保持组件的精益，从而将组件的作用，集中在对视图的支持上（keeps the component lean and focused on supporting the view）。此种重构，还令到使用一个模拟服务来对组件进行单元测试更为容易。
+
+而由于数据服务总是异步的，因此本章将以一个**基于承诺**版本的数据服务结束（because data services are invariably asynchronous, we'll finish the chapter with a **Promise**-based version of the data service）。
+
+请运行此部分的[现场示例](https://angular.io/resources/live-examples/toh-4/ts/eplnkr.html)。
+
+### 上次完成的（Where We Left Off）
+
+在继续英雄之旅前，我们先来核对一下下面文件结构。如不是下面这样，就要回到前一部分，找出那些遗失掉的文件。
+
+![第四部分的文件结构](images/file-structure-part-IV.png)
+
+### 让应用保持transpiling及运行
+
+我们想要启动TypeScript编译器，让其监视文件变化，并启动服务器。通过敲入下面的命令来完成这个操作：
+
+```bash
+npm start
+```
+
+该命令将在我们持续构建英雄之旅应用是，保持应用的运行。
 
