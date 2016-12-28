@@ -694,4 +694,34 @@ export class AppComponent {
 
 本章要将主清单/详细信息视图，重构为一些单独组件（refactor the master/detail view into separate components）。
 
+这个app在不断变大。一些用例正以组件重用、往组件传入数据，以及创建出更多可重用资源的方式涌现出来（use cases are flowing in for reusing components, passing data to components, and creating more reusable assets）。那么就让我们将英雄清单从英雄详细信息中分离出来，并令到详细信息组件成为可重用的组件吧。
+
+请在[现场示例](https://angular.io/resources/live-examples/toh-3/ts/eplnkr.html)运行这部分。
+
+### 上次留下的内容
+
+在继续英雄之旅前，先来检查一下下面的文件结构。如不是那样，就需要回到上一章，加以补充。
+
+![第二部分的文件结构](images/file-structure-part-II.png)
+
+### 让应用保持transpiling及运行
+
+我们想要启动TypeScript编译器，让其监视文件变化，并启动服务器。通过敲入下面的命令来完成这个操作：
+
+```bash
+npm start
+```
+
+该命令将在我们持续构建英雄之旅应用是，保持应用的运行。
+
+### 制作一个英雄详细信息组件（Making a Hero Detail Component）
+
+这里的英雄清单及英雄详细信息，位于同一文件的同一个组件中。它们现在还比较小，但都可能会增大。可以确定的是，对于其中一个是需要一些新的需求、另一个则没有什么新的需求的。因此所有变化都将把两个组件置于风险之中，同时在测试上也是事半功倍的。如我们不得不在应用中的其它地方重用到英雄详细信息，那么英雄清单就将一路随行（they're small now but each could grow. We are sure to receive new requiements for one and not the other. Yet every change puts both components at risk and doubles the testing burden without benefit. If we had to reuse the hero details elsewhere in our app, the heroes list would tag along for the ride）。
+
+当前的组件，违反了[单一功能原则](https://zh.wikipedia.org/wiki/%E5%8D%95%E4%B8%80%E5%8A%9F%E8%83%BD%E5%8E%9F%E5%88%99)（[the Single Responsibility Principle](https://8thlight.com/blog/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html)）。尽管这是一个教程，但我们还是可以把事情做对 -- 尤其是这又没有什么困难的，同时我们在这个过程中还能学到如何来构建Angular应用。
+
+先来将英雄详细信息，分解到其自己的组件中。
+
+#### 分离出英雄详细信息组件（Separating the Hero Detail Component）
+
 
