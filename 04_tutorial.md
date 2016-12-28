@@ -724,4 +724,343 @@ npm start
 
 #### 分离出英雄详细信息组件（Separating the Hero Detail Component）
 
+请加入一个名为`hero-detail.component.ts`的文件，到`app`文件夹，并像下面这样创建出`HeroDetailComponent`。
+
+```typescript
+import { Component, Input } from '@angular/core'
+
+@Component({
+    selector: 'my-hero-detail',
+})
+
+export class HeroDetailComponent {}
+```
+
+> **命名约定（Naming conventions）**
+> 我们希望能一眼就看出哪些类是组件，以及哪些文件包含了组件。
+> 请注意这里的一个名为`app.component.ts`文件中，有着一个`AppComponent`，而新的`HeroDetailComponent`则是在一个名为`hero-detail.component.ts`文件中。
+> 所有的组件名称，都是以"Component"结尾的。而所有组件文件名称，都是以".component"结尾的。
+> 这里所有文件名都是以小写的中线命名法（dash case, 又名烤串命名法，kebab-case）拼写的，因此无需担心服务器上或代码控制中的大小写敏感问题（we spell our file names in lower dash case(AKA kebab-case) so we don't worry about case sensitivity on the server or in source control）。
+
+这里以从Angular导入`Component`及`Input`装饰器开始，因为很快将要使用到它们。
+
+使用`Component`装饰器，来创建出元数据，在装饰器中制定了将这个组件的元素表示出来的选择器名称（we create metadata with the `Component` decorator where we specify the selector name that identifies this component's element）。随后就将该类加以导出，并令其对其它组件可用了。
+
+在完成了这里后，就会将该`HeroDetailComponent`导入到`AppComponent`, 并建立相应的`<my-hero-detail>`元素。
+
+### 英雄详细信息模板（Hero Detail Template）
+
+此时，*多个英雄及英雄详细信息*的那些视图，还是结合在`AppComponent`的同一模板中的。那么就让我们从`AppComponent`中将*英雄详细信息*，**剪切（cut）**下来，并**粘贴（paste）**到新的`HeroDetailComponent`的模板属性中去吧。
+
+前面我们对`AppComponent`的`selectedHero.name`进行了绑定。而`HeroDetailComponent`将有一个`hero`属性，而不是`selectedHero`属性。因此在新的模板中，要将`selectedHero`用`hero`加以替换。那是仅有的修改了。结果看起来像下面这样：
+
+```typescript
+template: `
+    <div *ngIf="hero != undefined">
+        <h2>{{hero.name}} details!</h2>
+        <div><label>id: </label>{{hero.id}}</div>
+        <md-input-container>
+            <input md-input id="name" [(ngModel)]="hero.name" placeholder="名 字" />
+        </md-input-container>
+    </div>
+`
+```
+
+现在英雄详细信息的布局，就仅存在与新的`HeroDetailComponent`中了。
+
+### 加入*HERO*属性（ADD THE *HERO* PROPERTY）
+
+现在加入上面所讲到的组件类中的`hero`属性。
+
+```typescript
+hero: Hero;
+```
+
+呜哦。这里将`hero`属性，声名为类型`Hero`，但`Hero`类却是在`app.component.ts`文件中的。现在有着两个组件，分别在各自的文件中，都需要对`Hero`类进行引用。
+
+这里通过将`Hero`类，从`app.component.ts`文件，重新放到其自己的`hero.ts`文件中。
+
+```typescript
+export class Hero {
+    id: number;
+    name: string;
+}
+```
+
+这里将`hero.ts`中的`Hero`类加以到处，是因为我们在两个组件文件都需要对其进行引用。请在`app.component.ts`及`hero-detail.component.ts`两个文件的顶部，同时加入下面的导入语句。
+
+```typescript
+import { Hero } from './hero';
+```
+
+### 这里的*HERO*属性，是一个*INPUT*（THE *HERO* PROPERTY IS AN INPUT）
+
+必须告诉`HeroDetailComponent`要显示哪名英雄。那么由谁来告诉它呢？就是父组件`AppComponent`了。
+
+`AppComponent`知道要显示哪名英雄：就是用户从清单中选择的那名英雄。而用户的选择，是在`AppComponent`的`selectedHero`属性中的。
+
+马上就要对`AppComponent`的模板进行更新，以令到`AppComponent`将其`selectedHero`属性，绑定到`HeroDetailComponent`的`hero`属性。该绑定看起来*可能*像这样：
+
+```html
+<my-hero-detail [hero]="selectedHero"></my-hero-detail>
+```
+
+请注意这里的`hero`属性，是属性绑定的**目标（target）** -- 其处于等号左边的方括号中。
+
+Angular强调在声明某个**目标**属性时，应作为一个**输入**属性（Angular insists that we declare a **target** property to be an ***input*** property）。如没有这样做，Angular将拒绝此绑定并抛出一个错误。
+
+> 在[这里](https://angular.io/docs/ts/latest/guide/attribute-directives.html#why-input)我们对输入属性有更详细的说明，同时还解释了目标属性需要此种特殊对待、而源属性不受约束的原因。
+
+将那个`hero`属性声明为一个*输入*的的方式有两三种。这里将使用我们首选的方式，也就是使用早先所导入的`@Input`装饰器，来对这个`hero`属性加以注释。
+
+```typescript
+@Input()
+hero: Hero;
+```
+
+> 在[属性指令（Attribute Directives）](https://angular.io/docs/ts/latest/guide/attribute-directives.html#input)章节，可了解到更多有关这个`@Input`装饰器的知识。
+
+
+### 对AppModule加以刷新（Refresh the AppModule）
+
+现在回到`AppModule`, 也就是该应用的根模块（root module），并教会它使用新的`HeroDetailComponent`.
+
+以导入`HeroDetailComponent`开始，之后就可以对其进行引用了。
+
+```typescript
+import { HeroDetailComponent } from './hero-detail.component';
+```
+
+随后将`HeroDetailComponent`加入到`NgModule`装饰器的`declarations`数组中。该数组包含了我们所创建的、并属于这个应用模块的所有组件的清单、管道，与指令（the `NgModule` decorator's `declarations` array, this array contains the list of all components, pipes, and directives that we created and that belong in our application's module）。
+
+### 刷新AppComponent（Refresh the AppComponent）
+
+现在既然应用已经获悉有着`HeroDetailComponent`了，就要在`AppComponent`模板中找到先前移除掉的*英雄详细信息*内容的地方，并在那里加入表示`HeroDetailComponent`的一个元素标签。
+
+```html
+<my-hero-detail></my-hero-detail>
+```
+
+> *my-hero-detail*就是我们在`HeroDetailComponent`元数据中作为`selector`设置的名称。
+
+除非我们像下面这样，将`AppComponent`的`selectedHero`属性绑定到`HeroDetailComponent`元素的`hero`属性，这两个组件是不会协调起来的。
+
+```html
+<my-hero-detail [hero]="selectedHero"></my-hero-detail>  
+```
+
+现在`AppComponent`的模板看起来想下面这样了：
+
+```typescript
+    template: `
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+                [class.selected]="hero === selectedHero">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+        <my-hero-detail [hero]="selectedHero"></my-hero-detail>  
+    `
+```
+
+正是由于有了这个绑定，`HeroDetailComponent`将接收到来自`AppComponent`的英雄，并将那名英雄的详细信息显示在清单之下。该详细信息会在每次用户点选一名新的英雄时，加以更新。
+
+### 运行起来了（It works!）
+
+当我们在浏览器中查看应用时，将看到一个英雄的清单。在选择了某位英雄后，就可以看到所选英雄的详细信息。
+
+从根本上讲，这里新引入的就是可以在应用的任何地方，使用这个`HeroDetailComponent`来显示英雄的详细信息了。
+
+我们已经建立出了第一个可重用的组件！
+
+### 审视一下应用结构（Reviewing the App Structure）
+
+在本章中所完成的良好重构之后，让我们来检查一下有着的下面的文件结构。
+
+![第四部分的文件结构](images/file-structure-part-IV.png)
+
+下面是本章所讨论到的一些代码文件。
+
+先是`app.component.ts`:
+
+```typescript
+import { Component } from '@angular/core';
+
+import { Hero } from './hero';
+
+const HEROES: Hero[] = [
+    { id: 11, name: 'Mr. Nice' },
+    { id: 12, name: 'Narco' },
+    { id: 13, name: 'Bombasto' },
+    { id: 14, name: 'Celeritas' },
+    { id: 15, name: 'Magneta' },
+    { id: 16, name: 'RubberMan' },
+    { id: 17, name: 'Dynama' },
+    { id: 18, name: 'Dr IQ' },
+    { id: 19, name: 'Magma' },
+    { id: 20, name: 'Tornado' }
+]
+
+@Component({
+    selector: 'my-app',
+    styles: [`
+        .selected {
+            background-color: #CFD8DC !important;
+            color: white;
+        }
+        .heroes {
+            margin: 0 0 2em 0;
+            list-style-type: none;
+            padding: 0;
+            width: 15em;
+        }
+        .heroes md-list-item {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+            background-color: #EEE;
+            margin: .5em;
+            padding: .3em 0;
+            height: 1.6em;
+            border-radius: 4px;
+        }
+        .heroes md-list-item.selected:hover {
+            background-color: #BBD8DC !important;
+            color: white;
+        }
+        .heroes md-list-item:hover {
+            color: #607D8B;
+            background-color: #DDD;
+            left: .1em;
+        }
+        .heroes .text {
+            position: relative;
+            top: -3px;
+        }
+        .heroes .badge {
+            display: inline-block;
+            font-size: small;
+            color: white;
+            padding: 0.8em 0.7em 0 0.7em;
+            background-color: #607D8B;
+            line-height: 1em;
+            position: relative;
+            left: -1px;
+            top: -4px;
+            height: 1.8em;
+            margin-right: .8em;
+            border-radius: 4px 0 0 4px;
+        }
+    `
+    ],
+
+    template: `
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+                [class.selected]="hero === selectedHero">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+        <my-hero-detail [hero]="selectedHero"></my-hero-detail>  
+    `,
+})
+export class AppComponent {
+    title = 'Tour of Heroes';
+    selectedHero: Hero;
+    heroes = HEROES;
+
+    onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
+}
+```
+
+`hero-detail.component.ts`:
+
+```typescript
+import { Component, Input } from '@angular/core'
+
+import { Hero } from './hero';
+
+@Component({
+    selector: 'my-hero-detail',
+    template: `
+        <div *ngIf="hero != undefined">
+            <h2>{{hero.name}} details!</h2>
+            <div><label>id: </label>{{hero.id}}</div>
+            <md-input-container>
+                <input md-input id="name" [(ngModel)]="hero.name" placeholder="名 字" />
+            </md-input-container>
+        </div>
+    `
+})
+
+export class HeroDetailComponent {
+    @Input()
+    hero: Hero;
+}
+```
+
+`hero.ts`
+export class Hero {
+    id: number;
+    name: string;
+}
+```
+
+最后是`app.module.ts`:
+
+```typescript
+import 'hammerjs';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms'
+import { MaterialModule } from '@angular/material'
+
+import { AppComponent } from './app.component';
+import { HeroDetailComponent } from './hero-detail.component'
+
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot()
+    ],
+    declarations: [
+        AppComponent,
+        HeroDetailComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+*译者注：* 这里第一行的`import 'hammerjs';`是因为Angular2 Material的使用而导入的（加入触摸支持）。同时还需要对项目中的`systemjs.config.js`做加入`'hammerjs': 'npm:hammerjs/hammer.min.js'。
+
+### 走过的路（The Road We've Travelled）
+
+让我们来对已经构建的部分做一个盘点：
+
++ 建立了一个可重用的组件
++ 学习了怎样令到某个组件接受输入
++ 学习了在某个Angular模块中声明所需要的一些应用的指令。我们将这些指令在`NgModule`装饰器的`declarations`数组中列出（we learned to declare the application directives we need in an Angular module. We list the directives in the `NgModule` decorator's `declarations` array）。
++ 学习了将某个父组件绑定到某个子组件。
+
+请允许此部分的[现场示例](https://angular.io/resources/live-examples/toh-3/ts/eplnkr.html)。
+
+### 前面的路（the Road Ahead）
+
+在有了共享组件后，现在我们的英雄之旅应用已变得更具可重用了。
+
+但现在仍是在`AppComponent`中，获取模拟数据。那样做并不是可持续的。后面应将数据访问重构为一个单独的服务，并在需要数据的组件之间，共享该服务。
+
+下一个教程章节，我们将学习服务的建立。
+
+## 服务（Services）
+
 
