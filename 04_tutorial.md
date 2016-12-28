@@ -371,55 +371,57 @@ heroes = HEROES;
 
 ```typescript
 styles: [`
-  .selected {
-    background-color: #CFD8DC !important;
-    color: white;
-  }
-  .heroes {
-    margin: 0 0 2em 0;
-    list-style-type: none;
-    padding: 0;
-    width: 15em;
-  }
-  .heroes li {
-    cursor: pointer;
-    position: relative;
-    left: 0;
-    background-color: #EEE;
-    margin: .5em;
-    padding: .3em 0;
-    height: 1.6em;
-    border-radius: 4px;
-  }
-  .heroes li.selected:hover {
-    background-color: #BBD8DC !important;
-    color: white;
-  }
-  .heroes li:hover {
-    color: #607D8B;
-    background-color: #DDD;
-    left: .1em;
-  }
-  .heroes .text {
-    position: relative;
-    top: -3px;
-  }
-  .heroes .badge {
-    display: inline-block;
-    font-size: small;
-    color: white;
-    padding: 0.8em 0.7em 0 0.7em;
-    background-color: #607D8B;
-    line-height: 1em;
-    position: relative;
-    left: -1px;
-    top: -4px;
-    height: 1.8em;
-    margin-right: .8em;
-    border-radius: 4px 0 0 4px;
-  }
-`]
+        .selected {
+            background-color: #CFD8DC !important;
+            color: white;
+        }
+        .heroes {
+            margin: 0 0 2em 0;
+            list-style-type: none;
+            padding: 0;
+            width: 15em;
+        }
+        .heroes md-list-item {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+            background-color: #EEE;
+            margin: .5em;
+            padding: .3em 0;
+            height: 1.6em;
+            border-radius: 4px;
+        }
+        .heroes md-list-item.selected:hover {
+            background-color: #BBD8DC !important;
+            color: white;
+        }
+        .heroes md-list-item:hover {
+            color: #607D8B;
+            background-color: #DDD;
+            left: .1em;
+        }
+        .heroes .text {
+            position: relative;
+            top: -3px;
+        }
+        .heroes .badge {
+            display: inline-block;
+            font-size: small;
+            color: white;
+            padding: 0.8em 0.7em 0 0.7em;
+            background-color: #607D8B;
+            line-height: 1em;
+            position: relative;
+            left: -1px;
+            top: -4px;
+            height: 1.8em;
+            margin-right: .8em;
+            border-radius: 4px 0 0 4px;
+        }
+    `
 ```
+
+**注：**因为这里使用了Angular2 Material, 所以较原文有所改变。
 
 请注意这里有很多的样式！我们可以想这里所展示的那样把它们放在行内，或者可将这些样式移除到其自身文件，那样就可以令到对组件的编码编写更为容易。后面的章节就将这么做。现在只需继续前进。
 
@@ -488,4 +490,208 @@ onSelect(hero: Hero): void {
     }
 ```   
 
-后面将在模板中现实所选英雄的详细信息。
+后面将在模板中现实所选英雄的详细信息。而此时模板仍然引用的是旧的`hero`属性。那么就让我们将模板修正为绑定到新的`selectedHero`属性吧。
+
+```
+<h2>{{selectedHero.name}} details!</h2>
+<div><label>id: </label>{{selectedHero.id}}</div>
+<md-input-container>
+    <input md-input id="name" [(ngModel)]="selectedHero.name" placeholder="名 字" />
+</md-input-container>
+```
+
+#### 使用`ngIf`来隐藏空详细信息（Hide the empty detail with `ngIf`）
+
+当应用装入时，我们将看到一个英雄的清单，但没有英雄被选定。因此`selectedHero`就处于未定义`undefined`状态。那就是将在浏览器控制台中看到以下错误的原因：
+
+```console
+EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]
+```
+
+请记住在模板中一直显示着`selectedHero.name`呢。而因为`selectedHero`本身就是未定义的，所以这个`name`属性并不存在。
+
+通过在某个英雄被选定之前，将英雄详细信息排除在DOM之外（keeping the hero detail out of the DOM）这么做，就能解决这个问题。
+
+这里将模板的这个HTML的英雄详细信息内容，用一个`<div>`标签加以封装。随后在加入内建的`ngIf`指令，并将其设置为组件的`selectedHero`属性。
+
+```typescript
+<div *ngIf="selectedHero">
+    <h2>{{selectedHero.name}} details!</h2>
+    <div><label>id: </label>{{selectedHero.id}}</div>
+    <md-input-container>
+        <input md-input id="name" [(ngModel)]="selectedHero.name" placeholder="名 字" />
+    </md-input-container>
+</div>
+```
+
+> 请记住这里`ngIf`前面的前导星号，是该语法的重要组成部分。
+
+在没有`selectedHero`时，`ngIf`指令将从DOM移除这些英雄详细信息的HTML。就不会有那些英雄详细信息的元素了，同时也就无需担心那些绑定了。
+
+在用户拾取某名英雄时，`selectedHero`将变为“真（truthy）”，同时`ngIf`就把这些英雄详细信息内容，放入到DOM，并执行所嵌套的那些绑定。
+
+> `ngIf`与`ngFor`两个内建指令，叫做“结构性指令（structural directives）”，因为它们可以改变DOM组成部分的结构。也就是说，正是它们赋予结构以Angular在DOM中显示内容方式（they can change the structure of portions of the DOM. In other words, they give structure to the way Angular displays content in the DOM）。
+> 可在[结构性指令](https://angular.io/docs/ts/latest/guide/structural-directives.html)及[模板语法](https://angular.io/docs/ts/latest/guide/template-syntax.html#directives)章节，了解更多有关`ngIf`、`ngFor`及其它结构性指令的知识。
+
+浏览器将刷新，我们将看到英雄清单，而不是所选的英雄详细信息。这是以为`selectedHero`处于未定义状态，所以`ngIf`将英雄详细信息排除在了DOM之外。而当我们点击清单中的某名英雄时，所选的英雄将显示在英雄详细信息中。我们所期望的功能就都实现了。
+
+#### 为所选添加样式（Styling the selection）
+
+现在可以在下面的详细信息区域看到所选的英雄了，但在上面的清单中却无法快速找到那名英雄。通过将`selected`CSS类应用到主清单中适当`<li>`上，就可以修正这个问题。比如，在选择了英雄清单中的Magneta时，可通过赋予其一个如下所示的些许不同的背景色，而令其从视觉上冒出来。
+
+![已选择的英雄清单](images/heros-list-selected.png)
+
+这里将把一个的绑定在`class`上的到CSS类`selected`的属性，加入到模板（we'll add a property binding on `class` for the `selected` class）。将把此绑定设置为一个将当前的`selectedHero`与模板输入变量`hero`进行比较的表达式。
+
+此处的关键，就是该CSS类的名称（也就是`selected`）。在两个英雄匹配时，表达式的值就为真`true`，否则就为假`false`。就是说“在比较的两名英雄匹配是，就应用`selected`类，如不匹配，则移除之”（we're saying *"apply the `selected` class if the heroes match, remove it if they don't"*）。
+
+
+```html
+[class.selected]="hero === selectedHero"
+```
+
+请注意模板中的`class.selected`是被方括号（square brackets(`[]`)）括起来的。这正是**属性绑定（property binding）**的语法，属性绑定中数据从数据流单向流动，到`class`的某个属性（property binding, a binding in which data flows one way from the data source(the expression `hero === selectedHero`) to a property of `class`）。
+
+```html
+<md-list class="heroes">
+    <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+        [class.selected]="hero === selectedHero">
+        <span class="badge">{{hero.id}}</span>{{hero.name}}
+    </md-list-item>
+</md-list>
+```
+
+> 在模板语法章节，可了解到更多有关[属性绑定](https://angular.io/docs/ts/latest/guide/template-syntax.html#property-binding)的知识。
+
+浏览器将重新装入应用。在选择了英雄Magneta后，通过背景颜色，选定项就被清楚地标识出来了。
+
+![英雄清单](images/heroes-list-1.png)
+
+在选择了不同英雄后，这种标识颜色将转换到那名英雄上（the tell-tale color switches to that hero）。
+
+下面是目前完整的`app.component.ts`：
+
+```typescript
+import { Component } from '@angular/core';
+
+export class Hero {
+    id: number;
+    name: string;
+}
+
+const HEROES: Hero[] = [
+    { id: 11, name: 'Mr. Nice' },
+    { id: 12, name: 'Narco' },
+    { id: 13, name: 'Bombasto' },
+    { id: 14, name: 'Celeritas' },
+    { id: 15, name: 'Magneta' },
+    { id: 16, name: 'RubberMan' },
+    { id: 17, name: 'Dynama' },
+    { id: 18, name: 'Dr IQ' },
+    { id: 19, name: 'Magma' },
+    { id: 20, name: 'Tornado' }
+]
+
+@Component({
+    selector: 'my-app',
+    styles: [`
+        .selected {
+            background-color: #CFD8DC !important;
+            color: white;
+        }
+        .heroes {
+            margin: 0 0 2em 0;
+            list-style-type: none;
+            padding: 0;
+            width: 15em;
+        }
+        .heroes md-list-item {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+            background-color: #EEE;
+            margin: .5em;
+            padding: .3em 0;
+            height: 1.6em;
+            border-radius: 4px;
+        }
+        .heroes md-list-item.selected:hover {
+            background-color: #BBD8DC !important;
+            color: white;
+        }
+        .heroes md-list-item:hover {
+            color: #607D8B;
+            background-color: #DDD;
+            left: .1em;
+        }
+        .heroes .text {
+            position: relative;
+            top: -3px;
+        }
+        .heroes .badge {
+            display: inline-block;
+            font-size: small;
+            color: white;
+            padding: 0.8em 0.7em 0 0.7em;
+            background-color: #607D8B;
+            line-height: 1em;
+            position: relative;
+            left: -1px;
+            top: -4px;
+            height: 1.8em;
+            margin-right: .8em;
+            border-radius: 4px 0 0 4px;
+        }
+    `
+    ],
+
+    template: `
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+                [class.selected]="hero === selectedHero">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+        
+        <div *ngIf="selectedHero != undefined">
+            <h2>{{selectedHero.name}} details!</h2>
+            <div><label>id: </label>{{selectedHero.id}}</div>
+            <md-input-container>
+                <input md-input id="name" [(ngModel)]="selectedHero.name" placeholder="名 字" />
+            </md-input-container>
+        </div>
+    `,
+})
+export class AppComponent {
+    title = 'Tour of Heroes';
+    selectedHero: Hero;
+    heroes = HEROES;
+
+    onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
+}
+```
+
+### 历程回顾（The Road We've Travelled）
+
+下面是本章所达成的一些目标：
+
++ 现在我们的英雄之旅应用显示了一个可选择的英雄清单。
++ 加入了选择某名英雄并展示其详细信息的能力。
++ 学习了在组件模板中怎样来使用内建的`ngIf`与`ngFor`指令
+
+请在[现场示例](https://angular.io/resources/live-examples/toh-2/ts/eplnkr.html)来运行这一部分。
+
+
+### 后面的路
+
+现在这个英雄之旅应用已经有所成长，但离完成还很远。将完整的应用放入到单个的组件中，是不可行的。所以需要将单个的组件，拆分成一些子组件，并教会它们一起运作，这就是下一章要学的内容。
+
+## 多个组件（Multiple Components）
+
+本章要将主清单/详细信息视图，重构为一些单独组件（refactor the master/detail view into separate components）。
+
+
