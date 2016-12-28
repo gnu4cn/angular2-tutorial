@@ -354,3 +354,136 @@ heroes = HEROES;
 > 上面赋予给`ngFor`的双引号括起来的文本，意思是“取得`heroes`数组中的每个英雄，将其保存在本地的`hero`变量，并令其对相应的模板实例可用（take each hero in the `heroes` array, store it in the local `hero` variable, and make it available to the corresponding template instance）”。
 > 在“hero”前的`let`关键字，将`hero`标识为一个模板的输入变量（the `let` keyword before "hero" identifies `hero` as a template variable）。就可以在模板那边对该变量进行引用，以访问到某个英雄的属性了。
 > 请在[显示数据（Displaying Data）](https://angular.io/docs/ts/latest/guide/displaying-data.html#ngFor)及[模板语法](https://angular.io/docs/ts/latest/guide/template-syntax.html#ngFor)章节，了解更多有关`ngFor`与模板输入变量有关的知识。
+
+现在，在`<li>`标签之间插入一些使用`hero`模板变量来显示英雄属性的内容。
+
+```html
+<md-list-item *ngFor="let hero of heroes">
+    <span class="badge">{{hero.id}}</span>{{hero.name}}
+</md-list-item>
+```            
+
+### 给我们的英雄加上样式
+
+这里的英雄清单看起来相当乏味。那么就会想让这个清单让用户看起来更为明显，可以区别出鼠标悬浮的英雄与选定的英雄有所不同。
+
+这里就要通过在`@Component`装饰器上设置`styles`属性为下面这些CSS类，来将一些样式加入到组件。
+
+```typescript
+styles: [`
+  .selected {
+    background-color: #CFD8DC !important;
+    color: white;
+  }
+  .heroes {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    width: 15em;
+  }
+  .heroes li {
+    cursor: pointer;
+    position: relative;
+    left: 0;
+    background-color: #EEE;
+    margin: .5em;
+    padding: .3em 0;
+    height: 1.6em;
+    border-radius: 4px;
+  }
+  .heroes li.selected:hover {
+    background-color: #BBD8DC !important;
+    color: white;
+  }
+  .heroes li:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    left: .1em;
+  }
+  .heroes .text {
+    position: relative;
+    top: -3px;
+  }
+  .heroes .badge {
+    display: inline-block;
+    font-size: small;
+    color: white;
+    padding: 0.8em 0.7em 0 0.7em;
+    background-color: #607D8B;
+    line-height: 1em;
+    position: relative;
+    left: -1px;
+    top: -4px;
+    height: 1.8em;
+    margin-right: .8em;
+    border-radius: 4px 0 0 4px;
+  }
+`]
+```
+
+请注意这里有很多的样式！我们可以想这里所展示的那样把它们放在行内，或者可将这些样式移除到其自身文件，那样就可以令到对组件的编码编写更为容易。后面的章节就将这么做。现在只需继续前进。
+
+在将一些样式指派到某个组件时，这些样式将局限在那个特定组件。上面的这些样式只将应用到这里的`AppComponent`，而不会“泄露（leak）”到外部HTML。
+
+现在用于显示这些英雄的模板，应看起来像下面这样。
+
+```html
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+```
+
+### 选择一名英雄
+
+现在我们的应用有了一个英雄清单，同时还有显示了单独一名英雄的详细信息。清单与单独的英雄并没有以某种形式联系起来。而想要的是用户可以从清单中选择一名英雄，并将选择的英雄呈现在详细信息视图中。此种UI模式，就是广为人知的“主清单-详细信息”模式（this UI pattern is widely known as "master-detail"）。在这个案例中，主清单就是英雄清单，同时详细信息则是所选的英雄了。
+
+这里要通过一个绑定到点击事件的组件属性`selectedHero`，来将主清单和详细信息联系起来（let's connect the master to the detail through a `selectedHero` component property bound to a click event）。
+
+#### 关于点击事件（Click event）
+
+通过将一个绑定到`<li>`的Angular事件绑定插入到`<li>`标签中，对其进行修改。
+
+```html
+<md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)">
+    <span class="badge">{{hero.id}}</span>{{hero.name}}
+</md-list-item>
+```
+
+请关注这里的时间绑定：
+
+```html
+(click)="onSelect(hero)"
+```
+
+这里的双括号，将`<li>`元素的`click`事件，标识为目标（the parenthesis identify the `<li>` element's `click` event as the target）。而等号右边的表达式则是对`AppComponent`的`onSelect()`方法进行调用，将模板输入变量`hero`作为一个参数加以传入。该参数就是先前在`ngFor`中所定义的`hero`变量。
+
+> 在[用户输入](https://angular.io/docs/ts/latest/guide/user-input.html)与[模板语法](https://angular.io/docs/ts/latest/guide/template-syntax.html#event-binding)章节，可了解有关事件绑定（Event Binding）方面更多的知识。
+
+#### 加入点击处理器（Add the click handler）
+
+这里的时间绑定，引用了一个尚不存在的`onSelect`方法。那么现在就要将那个方法加入到组件。
+
+那个方法要做些什么呢？它应将组件选定的英雄，设置为用户所点击的英雄。
+
+这里的组件还没有一个“选定的英雄（selected hero）”。那么我们就从这里开始。
+
+#### 将选定英雄暴露出来（Expose the selected hero）
+
+现在就不再需要`AppComponent`的静态`hero`属性了。将其**替换**为这个简单的`selectedHero`属性：
+
+```typescript
+selectedHero: Hero;
+```
+
+这里确定下在用户选择某个英雄之前，不会有一个选定的英雄，一次不会如同前面`hero`那样，对`selectedHero`进行初始化。
+
+现在就要**加入一个`onSelect`方法**，将`selectedHero`属性，设置为用户所点击的`hero`。
+
+```typescript
+onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
+```   
