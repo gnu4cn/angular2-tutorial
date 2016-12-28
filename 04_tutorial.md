@@ -487,3 +487,5 @@ onSelect(hero: Hero): void {
         this.selectedHero = hero;
     }
 ```   
+
+后面将在模板中现实所选英雄的详细信息。
