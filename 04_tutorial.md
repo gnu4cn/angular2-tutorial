@@ -1236,4 +1236,20 @@ constructor(private heroService: HeroService){}
 
 这个构建器本身并不干什么事情。构建器的参数立即定义出一个私有的`heroService`属性，并将其标识为一个`HeroService`的注入点（the parameters simultaneously defines a private `heroService` property and identifies it as a `HeroService` injection site）。
 
+现在Angular将获悉在其创建出一个新的`AppComponent`时，要提供到一个`HeroService`的实例。
+
+> 在[依赖注入](https://angular.io/docs/ts/latest/guide/dependency-injection.html)章节，可了解更多有关依赖注入的知识。
+
+现在该*注入器（injector）*还不知道如何来创建出一个`HeroService`。如现在运行我们的代码，Angular将以一个下面的错误失败：
+
+```
+EXCEPTION: No provider for HeroService! (AppComponent -> HeroService)
+```
+
+这里就要通过注册一个`HeroService`的提供者，来教会该*注入器*怎样生成一个`HeroService`（we have to teach the *injector* how to make a `HeroService` by registering a `HeroService` **provider**）。这是通过在`@Component`调用的组件元数据底部，加入下面的`providers`数组属性来完成的。
+
+```typescript
+providers: [HeroService]
+```
+
 
