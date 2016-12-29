@@ -1103,4 +1103,137 @@ npm start
 
 请在`app`文件夹中建立一个叫做`hero.service.ts`的文件。
 
+> 这里我们已经采用了一种命名约定，在该约定中，我们将服务名称拼写为后面带有`.service`的小写形式。在服务名称有多个单词时，将把基本文件名（the base filename）写着小写的中线命名法形式。比如`SpecialSuperHeroService`就将定义在`special-super-hero.service.ts`文件中。
+
+这里将该类命名为`HeroService`并加以导出，以便后面其它组件等的导入。
+
+```typescript
+import { Injectable } from '@angular/core'
+
+@Injectable()
+export class HeroService {}
+```
+
+### 关于可注入服务（Injectable Services）
+
+请注意这里导入了Angular的`Injectable`函数，将将那个函数作为一个`@Injectable()`装饰器加以使用。
+
+> **不要忘掉了括号！** 忽略了它们将导致一个难于诊断的错误。
+
+TypeScript将观察到该`@Injectable()`装饰器，并生成有关该服务的元数据，Angular会需要这些元数据，来将其它依赖注入到此服务。
+
+*目前的*`HeroService`尚无任何的依赖。不过还是要加入该装饰器。*从一开始*就应用这个`@Injectable()`装饰器，从一致性和经历时间考验上讲，都是一种“最佳实践”（It is a "best practice" to apply the `@Injectable()` decorator *from the start* both for consistency and for future-proofing）。
+
+### 获取到这些英雄（Getting Heroes）
+
+这里要加入一个`getHeroes()`方法的存根（stub）。
+
+```typescript
+@Injectable()
+export class HeroService {
+    getHeroes(): void{} // stub
+}
+```
+
+在做出一个重要节点上，在部署上会遇到一点障碍一会儿（we're holding back on the the implementation for a moment to make an important point）。
+
+这个服务的消费者（the consumer of our service）并不知道该服务是如何获取到数据的。服务`HeroService`可从任意地方取得`Hero`数据。其可从某项web服务或者本地存储，抑或某个模拟数据源，获取数据。
+
+那就是将数据访问从组件中移除的优美之处。以后在采用何种部署方式时，就可以随心所欲地、不管何种理由地改变主意，而无需触碰到那些需要英雄数据的组件。
+
+### 模拟英雄（Mock Heroes）
+
+在`AppComponent`中，实际上已经有了模拟的`Hero`数据。但模拟数据其实并不属于那里，也不属于这里。所以就要将模拟数据移动到其自身文件中。
+
+请将`HEROES`数组从`app.component.ts`文件中剪切出来，将其粘贴到`app`文件夹中一个名为`mock-hero.ts`的新文件中。同样还要将`import { Hero } ...`语句进行拷贝，因为这个英雄数组使用到了`Hero`类。
+
+```typescript
+import { Hero } from './hero'
+
+export const HEROES: Hero[] = [
+    { id: 11, name: 'Mr. Nice' },
+    { id: 12, name: 'Narco' },
+    { id: 13, name: 'Bombasto' },
+    { id: 14, name: 'Celeritas' },
+    { id: 15, name: 'Magneta' },
+    { id: 16, name: 'RubberMan' },
+    { id: 17, name: 'Dynama' },
+    { id: 18, name: 'Dr IQ' },
+    { id: 19, name: 'Magma' },
+    { id: 20, name: 'Tornado' }
+]
+```
+
+这里将`HEROES`常量进行了导出，因此后面就可以其它地方将其导入了--就跟我们的`HeroService`一样。
+
+与此同时，回到`app.component.ts`，那里因为将`HEROES`数组剪切了出去，就留下了一个未初始化的`heroes`属性：
+
+```typescript
+heroes: Hero[];
+```
+
+### 返回模拟的英雄（Return Mocked Heroes）
+
+回到`HeroService`，将模拟的`HEROES`导入，并将其从`getHeroes`方法加以返回。我们的`HeroService`看起来像这样：
+
+```typescript
+import { Injectable } from '@angular/core'
+
+import { Hero } from './hero'
+import { HEROES } from './mock-heroes'
+
+@Injectable()
+export class HeroService {
+    getHeroes(): Hero[] {
+        return HEROES;
+    }
+}
+```
+
+### 对该英雄服务进行使用（Use the Hero Service）
+
+现在已经准备好在以`AppComponent`开始的其它组件中使用该`HeroService`了。
+
+与通常一样，这里以导入打算使用的东西，也就是这个`HeroService`开始。
+
+```typescript
+import { HeroService } from './hero.service'
+```
+
+该服务的导入，就允许在代码中对其加以*引用*了。那么`AppComponent`又该怎样来获取到一个运行时的具体`HeroService`示例呢（how should the `AppComponent` acquire a runtime concrete `HeroService` instance）？
+
+### 我们要新建出该*HeroService*吗？这样做没门！
+**Do we new the *HeroService*? No Way!**
+
+这里可以使用`new`关键字，像这样来创建出一个新的`HeroService`的实例：
+
+```typescript
+heroService = new HeroService() //千万不要这样做
+```
+
+但由于包括以下这些等的诸多原因，这是一个不好的想法：
+
++ 这样做组件就必须知道怎样来建立一个`HeroService`。如对`HeroService`构建器有所改变，就必须找到这样的建立了该服务的所有地方，并一一加以修正才行。四处给代码打补丁会造成错误，且增加测试负担。
++ 在每次使用到`new`关键字时，就创建出一个服务。而加入该服务将对英雄进行缓存并与其它一些服务共享该缓存时，会怎样呢？我们不能那样做。
++ 这样做就将`AppComponent`锁定到该`HeroService`的某种特定部署之中。对于不同场景要变换不同部署就将变得困难。还有就是可以离线运行吗？在测试时需要不同的模拟数据版本时会怎样呢？都不容易做到。
+
+*如果这样...，如果那样...，就有大量的事情要做了！*
+
+搞清楚了，肯定搞清楚了吧。但要避免这些问题却又简单得可笑，所以就没有理由犯下这个错误了。
+
+### 注入*HeroService*
+
+要用两行，来替换使用`new`关键字的一行语句：
+
+1. 加入一个构建器，该构建器同时还定义出一个私有属性（we add a constructor that also defines a private property）。
+2. 将`HeroService`加入到`AppComponent`组件的`providers`元数据。
+
+下面就是这个构建器：
+
+```typescript
+constructor(private heroService: HeroService){}
+```
+
+这个构建器本身并不干什么事情。构建器的参数立即定义出一个私有的`heroService`属性，并将其标识为一个`HeroService`的注入点（the parameters simultaneously defines a private `heroService` property and identifies it as a `HeroService` injection site）。
+
 
