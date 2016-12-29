@@ -1040,7 +1040,7 @@ import { HeroDetailComponent } from './hero-detail.component'
 export class AppModule { }
 ```
 
-*译者注：* 这里第一行的`import 'hammerjs';`是因为Angular2 Material的使用而导入的（加入触摸支持）。同时还需要对项目中的`systemjs.config.js`做加入`'hammerjs': 'npm:hammerjs/hammer.min.js'。
+*译者注：* 这里第一行的`import 'hammerjs';`是因为Angular2 Material的使用而导入的（加入触摸支持）。同时还需要对项目中的`systemjs.config.js`做加入`'hammerjs': 'npm:hammerjs/hammer.min.js'`。
 
 ### 走过的路（The Road We've Travelled）
 
@@ -1090,4 +1090,17 @@ npm start
 ```
 
 该命令将在我们持续构建英雄之旅应用是，保持应用的运行。
+
+### 建立Hero服务（Creating a Hero Service）
+
+现在，应用中的一些利益攸关方已经共享了其更广大愿景（Our stakeholders have shared their larger vision for our app）。这些利益攸关方想要在不同页面上以各种方式显示我们的这些英雄。现在已经能够从清单中选择一名英雄。立马我们就要加入一个带有那些顶级表现英雄的dashboard，并为编辑英雄详细信息而创建出一个单独视图。所有三个视图（清单、dashboard和详细信息），都需要英雄数据。
+
+目前，是`AppComponent`组件定义了用于显示的模拟英雄集。这样做至少有着两个问题。首先，定义这些英雄，并不是该组件的工作；其次，不能轻易地在其它组件与视图之间，共享那个英雄清单。
+
+可将这个英雄数据获取业务（data acquisition business），重构为一个提供英雄数据的单一服务，并由那些需要英雄数据的组件，来共享那个服务。
+
+### 建立`HeroService`（Create the `HeroService`）
+
+请在`app`文件夹中建立一个叫做`hero.service.ts`的文件。
+
 
