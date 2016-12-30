@@ -1368,4 +1368,15 @@ getHeroes(): Promise<Hero[]> {
 
 > 这里回调函数中的[ES2015箭头函数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)比起等价的函数表达式更为简洁，且优雅地处理好了`this`的问题。
 
+这里的回调函数将组件的`heroes`属性，设置为有该服务所返回的英雄数组。这就是全部的了（that's all there is to it）！
+
+应用仍在运行中，仍旧显示出一个英雄清单，并仍对选择某个名字而响应到一个详细信息视图。
+
+> 请查看附录的[令其慢下来](https://angular.io/docs/ts/latest/tutorial/toh-pt4.html#slow)部分，来看看在较差连接时，应用将会怎样。
+
+### 回顾一下现在应用的结构
+
+在完成了本章中的全部良好重构后，现在检查现在应用如下的文件结构：
+
+![第五章-服务-文件结构](images/file-structure-part-v.png)
 
