@@ -1356,6 +1356,16 @@ getHeroes(): Promise<Hero[]> {
 
 因为上面对`HeroService`所做出的修改，现在就要将`this.heroes`设置为一个Promise, 而不是一个英雄的数组了。
 
-所以这里就必须将我们的部署，修改为当该*Provise被达成（解决）时，在该Promise*上执行动作（we have to change our implementation to act on *the Promise when it resolves*）。
+所以这里就必须将我们的部署，修改为当该*Provise被达成（解决）时，在该Promise*上执行动作（we have to change our implementation to act on *the Promise when it resolves*）。从而在该Promise成功达成时，*就*将这些英雄显示出来。
+
+这里将我们的回调函数，作为一个参数，传递给该Promise的**`then`**方法。
+
+```typescript
+    getHeroes(): void {
+        this.heroService.getHeroes().then(heroes => this.heroes = heroes)
+    }
+```
+
+> 这里回调函数中的[ES2015箭头函数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)比起等价的函数表达式更为简洁，且优雅地处理好了`this`的问题。
 
 
