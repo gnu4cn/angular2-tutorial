@@ -1252,4 +1252,58 @@ EXCEPTION: No provider for HeroService! (AppComponent -> HeroService)
 providers: [HeroService]
 ```
 
+该`providers`数组告诉Angular，在其创建某个新的`AppComponent`时，建立一个`HeroService`的全新实例。于是`AppComponent`便可以使用那个服务，来获取到英雄，同时其组件树上的所有子组件（every child component of its component tree）都可以这样做了。
+
+### *AppComponent*中的*getHeroes*
+
+现在已经在`heroService`这个私有变量中得到了该服务。那么就要对其加以使用了。
+
+这里不妨停下来思考一下。我们可在一行代码中对该服务加以调用，从而获取到数据。
+
+```typescript
+this.heroes = this.heroService.getHeroes()
+```
+
+尽管不需要某个指定方法来对一行的代码进行封装。不过还是把它写成这样：
+
+```typescript
+    getHeroes(): void {
+        this.heroes = this.heroService.getHeroes()
+    }
+```
+
+### 引入*ngOnInit*生命周期钩子（the *ngOnInit* Lifecycle Hook）
+
+无疑现在`AppComponent`将获取并显示出这些英雄了。那么要在什么地方来调用`getHeroes`方法呢？是在某个构建器中吗？当然不会那样做！
+
+多年经验和血泪教训教育我们要把那些复杂逻辑排除在构建器之外，特别是那些可能会调用到服务器来作为数据访问方式的逻辑，更是要这么做（years of experience and bitter tears have taught us to keep complex logic out of the constructor, especially anything that might call a server as a data access method is sure to do）。
+
+构建器是用于一些诸如吧构建器参数连接到属性这样的简单初始化工作的。而不是用于繁重事务。应能够在某个测试中建立一个组件，而无需担心测试会带来真实影响--比如对服务器的调用！--除非我们告诉测试真的要造成实际影响（the constructor is for simple initializations like wiring constructor parameters to properties. It's not for heavy lifting. We should be able to create a component in a test and not worry that it might do real work -- like calling a server! -- before we tell it to do so）。
+
+既然不是由构建器来调用`getHeroes`方法，那么就必须有某种其它方式来对其进行调用。
+
+在应用了Angular的**ngOnInit***生命周期钩子*后，Angular就将对其进行调用。Angular提供了一些在组件生命周期中的重要时刻，比如在创建、每次变化及最终销毁时，加以切入的接口（Angular offers a number of interfaces for tapping into critical moments in the component lifecycle: at creation, after each chagne, and at its eventual destruction）。
+
+每个接口都有单个的方法。在组件应用到那个方法时，Angular就在适当时机对其进行调用。
+
+> 在[生命周期钩子](https://angular.io/docs/ts/latest/guide/lifecycle-hooks.html)章节，可了解有关生命周期钩子的更多信息。
+
+下面是该`OnInit`接口的基本轮廓：
+
+```typescript
+import { OnInit } from '@angular/core'
+
+export class AppComponent implements OnInit {
+    ngOnInit(): void {}
+}
+```
+
+这里编写了一个其中有着初始化逻辑的`ngOnInit`方法，并将其留给Angular在正确的时间进行调用。在这个案例中，是通过调用`getHeroes`方法来完成初始化的。
+
+```typescript
+ngOnInit(): void {
+    this.getHeroes()
+}
+```
+
 
