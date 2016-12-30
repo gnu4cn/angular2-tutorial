@@ -1342,3 +1342,20 @@ getHeroes(): Promise<Hero[]> {
 }
 ```
 
+这里仍使用的是模拟数据。通过返回一个以模拟英雄作为结果的**立即得到解决的承诺（immediately resolved Promise）**，模拟的是一台超快的、零延迟服务器的行为。
+
+#### 在Promise上行动（Act on the Promise）
+
+回到`AppComponent`及其`getHeroes`方法，看到其看起来仍像下面这样：
+
+```typescript
+    getHeroes(): void {
+        this.heroes = this.heroService.getHeroes()
+    }
+```
+
+因为上面对`HeroService`所做出的修改，现在就要将`this.heroes`设置为一个Promise, 而不是一个英雄的数组了。
+
+所以这里就必须将我们的部署，修改为当该*Provise被达成（解决）时，在该Promise*上执行动作（we have to change our implementation to act on *the Promise when it resolves*）。
+
+
