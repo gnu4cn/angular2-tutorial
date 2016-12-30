@@ -1328,4 +1328,17 @@ this.heroes = this.heroService.getHeroes()
 
 我们将使用到*[承诺（Promises）](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise)*。
 
+#### Hero服务做出一个承诺（the Hero Service makes a Promise）
+
+**承诺（Promise）**就是......，哦，就是一个在有结果后，将我们叫后去的承诺（A **Promise** is ... well it's a promise to call us back later when the results are ready）。我们请求某个异步服务来完成一些工作，并给予其一个回调函数。异步服务将确切地完成那些工作（于某处），并以工作的结果或某个错误，来调用给它的函数（we ask an asynchronous service to do some work and give it a callback function. It does that work(somewhere) and eventually it calls our function with the results of the work or an error）。
+
+> 这里做了简化。可在[这里](http://exploringjs.com/es6/ch_promises.html)或web上的其它地方，了解有关ES2015（ES6）的Promises的更多知识。
+
+现在使用下面的具备承诺返回（Promise-returning）的`getHeroes`方法，来更新该`HeroService`：
+
+```typescript
+getHeroes(): Promise<Hero[]> {
+    return Promise.resolve(HEROES)
+}
+```
 
