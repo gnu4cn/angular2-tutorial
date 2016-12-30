@@ -1306,4 +1306,26 @@ ngOnInit(): void {
 }
 ```
 
+应用将如预期那样运行、展示一个英雄清单，及在当我们点击了某个英雄名字时的一个英雄详细信息视图。
+
+现在已经接近完成，但有些事情还是有些问题。
+
+### 异步服务与承诺（Async Services and Promises）
+
+这里的`HeroService`立即返回了一个模拟英雄清单。其`getHeroes`签名是同步的：
+
+```typescript
+this.heroes = this.heroService.getHeroes()
+```
+
+请求了英雄数据后，他们就立即存在于返回的结果中。
+
+日后我们将从某个远端服务器获取到这些英雄。这里尚未调用到`http`，但后续章节会期望那样做。
+
+当我们要从服务器获取英雄数据时，就必将等待服务器的响应，同时又因为浏览器不会阻塞用户界面（UI），从而在等待时，就算我们想要对UI进行阻塞（实际上我们不会想要这么做），也是无法做到的（we won't be able to block the UI while we wait, even if we want to(which we shouldn't) because the browser won't block）。
+
+那么就必须要使用某种异步技巧，那样就要对这里的`getHeroes`方法进行修改了。
+
+我们将使用到*[承诺（Promises）](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise)*。
+
 
