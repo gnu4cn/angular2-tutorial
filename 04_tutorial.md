@@ -1380,3 +1380,236 @@ getHeroes(): Promise<Hero[]> {
 
 ![第五章-服务-文件结构](images/file-structure-part-v.png)
 
+下面是本章中所讨论到的那些文件。
+
+首先是 `app/hero.service.ts`:
+
+```typescript
+import { Injectable } from '@angular/core'
+
+import { Hero } from './hero'
+import { HEROES } from './mock-heroes'
+
+@Injectable()
+export class HeroService {
+    getHeroes(): Promise<Hero[]> {
+        return Promise.resolve(HEROES);
+    }
+}
+```
+
+`app/app.component.ts`:
+
+```typescript
+import { Component } from '@angular/core';
+import { OnInit } from '@angular/core'
+
+import { Hero } from './hero';
+import { HeroService } from './hero.service'
+import { HEROES } from './mock-heroes'
+
+@Component({
+    selector: 'my-app',
+    styles: [`
+        .selected {
+            background-color: #CFD8DC !important;
+            color: white;
+        }
+        .heroes {
+            margin: 0 0 2em 0;
+            list-style-type: none;
+            padding: 0;
+            width: 15em;
+        }
+        .heroes md-list-item {
+            cursor: pointer;
+            position: relative;
+            left: 0;
+            background-color: #EEE;
+            margin: .5em;
+            padding: .3em 0;
+            height: 1.6em;
+            border-radius: 4px;
+        }
+        .heroes md-list-item.selected:hover {
+            background-color: #BBD8DC !important;
+            color: white;
+        }
+        .heroes md-list-item:hover {
+            color: #607D8B;
+            background-color: #DDD;
+            left: .1em;
+        }
+        .heroes .text {
+            position: relative;
+            top: -3px;
+        }
+        .heroes .badge {
+            display: inline-block;
+            font-size: small;
+            color: white;
+            padding: 0.8em 0.7em 0 0.7em;
+            background-color: #607D8B;
+            line-height: 1em;
+            position: relative;
+            left: -1px;
+            top: -4px;
+            height: 1.8em;
+            margin-right: .8em;
+            border-radius: 4px 0 0 4px;
+        }
+    `
+    ],
+
+    template: `
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+                [class.selected]="hero === selectedHero">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+        <my-hero-detail [hero]="selectedHero"></my-hero-detail>  
+    `,
+    providers: [HeroService],
+})
+export class AppComponent implements OnInit {
+    title = 'Tour of Heroes'
+    selectedHero: Hero
+    heroes: Hero[]
+
+    constructor(private heroService: HeroService) { }
+
+    getHeroes(): void {
+        //var that = this
+
+        //this.heroService.getHeroes().then(function(res) {
+        //    that.heroes = res;
+        //})
+        
+        // 上面的是不用ES2015的箭头函数时的写法，下面是使用箭头函数的写法，更为简洁与优雅
+        // （无需额外的that变量, 来处理`this`的问题了）
+        
+        this.heroService.getHeroes().then(res => this.heroes = res)
+    }
+
+    ngOnInit(): void {
+        this.getHeroes()
+    }
+
+    onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
+}
+```
+
+以及`app/mock-heroes.ts`
+
+```typescript
+import { Hero } from './hero'
+
+export const HEROES: Hero[] = [
+    { id: 11, name: 'Mr. Nice' },
+    { id: 12, name: 'Narco' },
+    { id: 13, name: 'Bombasto' },
+    { id: 14, name: 'Celeritas' },
+    { id: 15, name: 'Magneta' },
+    { id: 16, name: 'RubberMan' },
+    { id: 17, name: 'Dynama' },
+    { id: 18, name: 'Dr IQ' },
+    { id: 19, name: 'Magma' },
+    { id: 20, name: 'Tornado' }
+]
+```
+
+### 走过的路
+
+现在盘点一下以及建立的东西：
+
++ 创建了一个可被多个组件共享的服务类（a service class）
++ 在`AppComponent`激活时，使用了`ngOnInit`生命周期钩子，来获取我们的那些英雄
++ 将`HeroService`定义为了`AppComponent`的一个提供者
++ 建立了模拟英雄数据，并将它们导入到了这里的服务中
++ 这里将服务设计为返回一个承诺Promise，且组件是从该Promise获取到数据的
+
+请运行本章的[现场示例](https://angular.io/resources/live-examples/toh-4/ts/eplnkr.html)。
+
+#### 后面的路
+
+使用共享组件与服务后，英雄之旅应用已变得更具可重用性了。现在打算创建一个仪表盘（dashboard）、加入在不同视图之间路由的菜单链接，并在模板中进行数据的格式操作。随着应用的进化，我们将学习对其进行怎样的设计，以令其更加易于成长和维护。
+
+### 附录：令其慢下来
+
+这里可模拟一个慢速连接（a slow connection）。
+
+导入`Hero`符号，并将下面的`getHeroesSlowly`方法，加入到`HeroService`（import the `Hero` symbol and add the following `getHeroesSlowly` method to the `HeroService`, *笔者注：* 现在还没明白为啥这里要说导入`Hero`符号）:
+
+```typescript
+    getHeroesSlowly(): Promise<Hero[]> {
+        return new Promise(resolve => {
+            // 模拟2秒的服务器延迟
+            setTimeout(() => resolve(this.getHeroes()), 2000)
+        })
+    }
+```
+
+就如同`getHeroes`, 函数`getHeroesSlowly`同样返回一个承诺Promise。但该Promise在以模拟英雄来解决该Promise前，要等待2秒钟时间。
+
+回到`AppComponent`，将`heroService.getHeroes`用`heroService.getHeroesSlowly`进行替换，在看看应用将表现为怎么。
+
+
+## 路由（Routing）
+
+加入Angular路由器（the Angular Router）并学习在视图之间进行导航。
+
+我们已经收到英雄之旅应用的新需求了：
+
++ 添加一个*仪表盘（Dashboard）*的视图。
++ 在*多英雄*与*仪表盘*视图之间进行导航。
++ 通过在两个视图的某位英雄上点击，来导航到所选英雄的详细信息视图。
++ 通过点击某个email中的*深入（deep）*链接，来打开某位特定英雄的详细信息视图。
+
+![导航图示](images/nav-diagram.png)
+
+这里将加入Angular的*路由器（Router）*到应用，以满足上述需求。
+
+> [路由与导航（routing and navigation）](https://angular.io/docs/ts/latest/guide/router.html)涵盖了比起本教程更具体的有关路由器的知识。
+
+请运行本章的[现场示例](https://angular.io/resources/live-examples/toh-5/ts/eplnkr.html)
+
+### 上一章留下的地方
+
+在继续英雄之旅应用之前，让我们检查一下在加入了英雄服务及英雄详细信息组件后，是否有着以下的文件结构。如不是这样，那么就要回到上一章，重新完成。
+
+![第五部分的文件结构](images/file-structure-part-vi.png)
+
+### 保持应用的编译（transpiling）与运行
+
+打开一个终端/控制台窗口，并输入下面的命令来启动TypeScript编译器、启动服务器，并监视代码变化：
+
+```bash
+npm start
+```
+
+应用便运行起来，并在我们持续构建该英雄之旅时，自动更新。
+
+### 行动计划（Action plan）
+
+下面是我们的计划：
+
++ 将`AppComponent`转变为仅处理导航的应用壳（an application shell）。
++ 将*多英雄*关注点从当前的`AppComponent`，迁移到一个单独的`HeroesComponent`（relocate the *Heroes* concerns within the current `AppComponent` to a separate `HeroesComponent`, *译者注：* 这实际上上一步的延续，且其中的关注点concerns，就是关注点分离Separation of concerns中所指的关注点）。
++ 加入路由。
++ 建立一个新的`DashboardComponent`
++ 将*仪表盘（Dashboard）*捆绑到导航结构（the navigation structure）中去。
+
+> *路由*是*导航*的另一个名称。而*路由器*则是实现视图之间导航的机制（*Routing* is another name for *navigation*. The *Router* is the mechanism for navigating from view to view）。
+
+### 对*AppComponent* 进行拆分
+
+当前app是装入`Appcomponent`，并立即显示出英雄清单的。
+
+完成本章中的这些修订后的app, 应显示一个有着对各种视图（*Dashboard*及*Heroes*视图）进行选择的壳（qiao3, shell），且会默认选中它们中的一个。
+
+
