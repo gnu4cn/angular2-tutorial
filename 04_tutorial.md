@@ -1612,4 +1612,28 @@ npm start
 
 完成本章中的这些修订后的app, 应显示一个有着对各种视图（*Dashboard*及*Heroes*视图）进行选择的壳（qiao3, shell），且会默认选中它们中的一个。
 
+组件`AppComponent`应只处理导航操作。那么就让我们将*多英雄（Heroes）*的显示，从`AppComponent`中移出，并移入到其自己的`HeroesComponent`中去吧。
+
+#### *HeroesComponent*
+
+`AppComponent`已经是专用于*多英雄（Heroes）*的了。这里将其命名为`HeroesComponent`, 并单独建立一个新的`AppComponent`，而无需将任何东西从`AppComponent`中移出。
+
+那么要重命名的步骤有下面这些：
+
++ 将`app.component.ts`重命名为`heroes.component.ts`
++ 将`AppComponent`类，重命名为`HeroesComponent`（在本地进行重命名，*仅*在这个文件中）
++ 将选择器`my-app`重命名为`my-heroes`
+
+`app/hero.component.ts`（仅显示重命名的项目）
+
+```typescript
+@Component({
+  selector: 'my-heroes',
+})
+export class HeroesComponent implements OnInit {
+}
+```
+
+#### 创建*AppComponent*
+
 
