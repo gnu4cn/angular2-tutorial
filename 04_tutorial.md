@@ -1821,3 +1821,15 @@ export class AppModule {
 #### 路由器链接（Router Links）
 
 我们肯定不期望由用户来将某个路由URL粘贴到地址栏的。所以就要将一个锚点标记, 加入到模板（*译者注*：当然也是指应用外壳组件的模板），在点击该锚点标记时，就激发到`HeroesComponent`组件的导航。
+
+请注意该锚点标记中的`routerLink`绑定。这里将该`RouterLink`指令（`RouterModule`诸多指令中的另一个）, 绑定到一个告诉路由器在用户点击该链接时，导航到某个地方的字符串（we bind the `RouterLink` directive(another of the `RouterModule` directives) to a string that tells the router where to navigate when the user clicks the link）。
+
+因为这里的链接不是动态的，所以我们使用了一个**一次性绑定（one-time binding）**，将一个*路由指令（routing instruction）*，绑定到这里的路由**路径（path）**。再回头看看上面的路由定义，就可以确认那个`/heroes`就是到`HeroesComponent`的路由的路径。
+
+> 在[路由]()章节，可了解更多有关动态路由器链接及*链接参数数组*有关的知识（dynamic router links and the *link parameters array*）。
+
+请刷新浏览器。将仅看到该应用的标题和一个多英雄链接了。而再不会看到英雄清单。
+
+> 此时浏览器地址栏显示的是`/`。到`HeroesComponent`的路由路径是`/heroes`， 而不是`/`。现在还没有匹配路径`/`的一条路由，因此没有显示的内容。那就是我们将要修复的问题了。
+
+
