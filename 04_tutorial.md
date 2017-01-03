@@ -1832,4 +1832,206 @@ export class AppModule {
 
 > 此时浏览器地址栏显示的是`/`。到`HeroesComponent`的路由路径是`/heroes`， 而不是`/`。现在还没有匹配路径`/`的一条路由，因此没有显示的内容。那就是我们将要修复的问题了。
 
+点击该*Heroes*导航链接，浏览器地址栏将被更新到`/heroes`，同时现在就看到了英雄清单。现在终于在导航了啊！
 
+此阶段的`AppComponent`看起来像下面这样。
+
+`app/app.component.ts(v2)`:
+
+```typescript
+import { Component } from '@angular/core'
+
+@Component ({
+    selector: 'my-app',
+    template: `
+        <h1>{{title}}</h1>
+        <a routerLink="/heroes">Heroes</a>
+        <router-outlet></router-outlet>
+    `
+})
+
+export class AppComponent {
+    title = '英雄之旅'
+}
+```
+
+现在的*AppComponent*附加到了一个路由器上，且显示那些受路由的视图（The *AppComponent* is now attached to a router and displaying routed views）。因为这个原因，且为将其与其它类型的组件有所区别，我们将这类组件叫做*路由器组件（a Router Component）*。
+
+### 加入一个*仪表盘（Dashboard）*
+
+只有在有着多个视图时，路由才有意义。所以我们需要另一个视图。
+
+这里要建立一个给到我们所要导航至某处并从该处进行导航的`DashboardComponent`占位符（create a placeholder `DashboardComponent` that gives us something to navigate to and from）。
+
+`app/dashboard.component.ts(v1)`:
+
+```typescript
+import { Component } from '@angular/core'
+
+@Component ({
+    selector: 'my-dashboard',
+    template: `
+        <h3>My Dashboard</h3>
+    `
+})
+
+export class DashboardComponent {}
+```
+
+后面我们将回到这里并令其更为有用。
+
+#### 配置该仪表盘的路由（Configure the dashboard route）
+
+回到`app.module.ts`并教会其导航到仪表盘。
+
+导入该仪表盘组件，并将下面的路由定义添加到`Routes`的定义数组（the `Routes` array of definitions）。
+
+`app/app.module.ts(仪表盘路由部分)`：
+
+```typescript
+{
+    path: 'dashboard',
+    component: DashboardComponent
+}
+```
+
+同时还要将`DashboardComponent`导入并添加到`AppModule`的`declarations`。
+
+`app/app.module.ts(仪表盘部分)`:
+
+```typescript
+declarations: [
+    AppComponent,
+    HeroesComponent,
+    HeroDetailComponent,
+    DashboardComponent
+]
+```
+
+### 重定向到（REDIRECTTO）
+
+这里打算在应用启动时显示出仪表盘，且想要在浏览器的地址栏看到一个美观的URL为`/dashboard`。但请记住目前浏览器地址栏中现在还显示的是`/`。
+
+这里可以使用一个重定向路由（a redirect route）来达到这个目的。将下面的代码，加入到路由定义数组中：
+
+`app/app.module.ts(重定向)`：
+
+```typescript
+{
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
+}
+```
+
+> 在[路由](https://angular.io/docs/ts/latest/guide/router.html#redirect)章节，可了解到更多有关*重定向（redirects）*的知识。
+
+#### 将导航添加到模板（ADD NAVIGATION TO THE TEMPLATE）
+
+最后，将一个仪表盘的导航链接添加到模板，就如同上面的*Heroes*链接一样。
+
+`app/app.component.ts(模板-v3)`:
+
+```typescript
+import { Component } from '@angular/core'
+
+@Component ({
+    selector: 'my-app',
+    template: `
+        <md-toolbar layout="row" class="md-whiteframe-z3">
+            <span class="fill-remaining-space">{{title}}</span>
+            <span class="fill-remaining-space" routerLink="/dashboard">Dashboard</span>
+            <span class="fill-remaining-space" routerLink="/heroes">Heroes</span>
+        </md-toolbar>
+        <router-outlet></router-outlet>
+    `
+})
+
+export class AppComponent {
+    title = '英雄之旅'
+}
+```
+
+前往到应用的根处（`/`）并重新载入，就可以在浏览器中看到改变。应用将显示出仪表盘，同时我们可以在仪表盘和多英雄视图之间进行导航。
+
+### 将顶级英雄放入仪表盘（Dashboard Top Heroes）
+
+这里将通过将四位顶级英雄醒目地显示出来的方式，令到仪表盘更为有趣。
+
+这里使用了一个指向到一个新的模板文件的`templateUrl`属性（a `templateUrl` property that points to a new template file），对`template`元数据进行替换。
+
+同时为解决该`templateUrl`的模块有关的装入问题，而将`moduleId`属性设置为了`module.id`（set the `moduleId` property to `module.id` for module-relative of the `templateUrl`）。
+
+`app/dashboard.component.ts(元数据部分)`：
+
+```typescript
+import { Component } from '@angular/core'
+
+@Component ({
+    moduleId: module.id,
+    selector: 'my-dashboard',
+    templateUrl: 'dashboard.component.html'
+})
+
+export class DashboardComponent {}
+```
+
+使用下面的内容来建立那个模板文件：
+
+`app/dashboard.component.html`:
+
+```typescript
+<h3>Top Heroes</h3>
+<md-grid-list cols="4">
+    <md-grid-tile *ngFor="let hero of heroes">
+        <div class="module hero">
+            <h4>{{hero.name}}</h4>
+        </div>
+    </md-grid-tile>
+</md-grid-list>
+```
+
+这里再度使用了`*ngFor`以对一个英雄清单进行遍历并显示他们的名字。还加入了一个额外的`<div>`元素，来帮助本章后面的样式添加。
+
+#### 共享*HeroService*
+
+我们偏向重用前面所建立的`HeroService`，来生成该组件的`heroes`数组。
+
+请回忆一下早前将`HeroService`从`HeroesComponent`的`providers`数组移除，并将其加入到`AppModule`的`providers`的那一章。
+
+该移动就建立两个一个单独的`HeroService`实例，该实例是对应用的*所有*组件可用的。Angular将注入`HeroService`，且我们将在这里的`DashboardComponent`中对其加以使用。
+
+#### 获取到英雄
+
+打开`dashboard.component.ts`文件，并加入一些必要的`import`语句。
+
+`app/dashboard.component.ts(导入部分)`:
+
+```typescript
+import { Component, OnInit } from '@angular/core'
+
+import { Hero } from './hero'
+import { HeroService } from './hero.service'
+```
+
+现在像下面这样来实现`DashboardComponent`类：
+
+`app/dashboard.component.ts(类的部分)`：
+
+```typescript
+export class DashboardComponent implements OnInit {
+    heroes: Hero[]
+    
+    constructor(private heroService: HeroService){}
+    
+    ngOnInit(): void {
+        this.heroService.getHeroes()
+            .then(res => this.heroes = res.slice(1, 5))
+    }
+}
+```
+
+在之前的`HeroesComponent`中，我们已经看到过此种逻辑了：
+
+- 定义一个`heroes`数组属性。
+- 在那个构建器中注入`HeroService`并将其保留在一个私有的`heroService`字段中（a private `heroService` field）。
