@@ -135,7 +135,7 @@ template: `<h1>{{title}}</h1><h2>{{hero.name}} details!</h2>`
 
 #### 加入更多的HTML
 
-显示一个名字是不错的，但我们希望看到所有英雄的属性。那么就要加入一个用于英雄`id`的`<div>`标签，及另一个用于英雄名字`name`属性的`<div>`标签。
+显示一个名字是不错的，但我们希望看到所有英雄的属性。那么就要加入一个用于英雄`id`的`<div>`标记，及另一个用于英雄名字`name`属性的`<div>`标记。
 
 ```typescript
 template: '<h1>{{title}}</h1><h2>{{hero.name}} details!</h2><div><label>id: </label>{{hero.id}}</div><div><label>name: </label>{{hero.name}}</div>'
@@ -355,7 +355,7 @@ heroes = HEROES;
 > 在“hero”前的`let`关键字，将`hero`标识为一个模板的输入变量（the `let` keyword before "hero" identifies `hero` as a template variable）。就可以在模板那边对该变量进行引用，以访问到某个英雄的属性了。
 > 请在[显示数据（Displaying Data）](https://angular.io/docs/ts/latest/guide/displaying-data.html#ngFor)及[模板语法](https://angular.io/docs/ts/latest/guide/template-syntax.html#ngFor)章节，了解更多有关`ngFor`与模板输入变量有关的知识。
 
-现在，在`<li>`标签之间插入一些使用`hero`模板变量来显示英雄属性的内容。
+现在，在`<li>`标记之间插入一些使用`hero`模板变量来显示英雄属性的内容。
 
 ```html
 <md-list-item *ngFor="let hero of heroes">
@@ -446,7 +446,7 @@ styles: [`
 
 #### 关于点击事件（Click event）
 
-通过将一个绑定到`<li>`的Angular事件绑定插入到`<li>`标签中，对其进行修改。
+通过将一个绑定到`<li>`的Angular事件绑定插入到`<li>`标记中，对其进行修改。
 
 ```html
 <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)">
@@ -512,7 +512,7 @@ EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]
 
 通过在某个英雄被选定之前，将英雄详细信息排除在DOM之外（keeping the hero detail out of the DOM）这么做，就能解决这个问题。
 
-这里将模板的这个HTML的英雄详细信息内容，用一个`<div>`标签加以封装。随后在加入内建的`ngIf`指令，并将其设置为组件的`selectedHero`属性。
+这里将模板的这个HTML的英雄详细信息内容，用一个`<div>`标记加以封装。随后在加入内建的`ngIf`指令，并将其设置为组件的`selectedHero`属性。
 
 ```typescript
 <div *ngIf="selectedHero">
@@ -835,7 +835,7 @@ import { HeroDetailComponent } from './hero-detail.component';
 
 ### 刷新AppComponent（Refresh the AppComponent）
 
-现在既然应用已经获悉有着`HeroDetailComponent`了，就要在`AppComponent`模板中找到先前移除掉的*英雄详细信息*内容的地方，并在那里加入表示`HeroDetailComponent`的一个元素标签。
+现在既然应用已经获悉有着`HeroDetailComponent`了，就要在`AppComponent`模板中找到先前移除掉的*英雄详细信息*内容的地方，并在那里加入表示`HeroDetailComponent`的一个元素标记。
 
 ```html
 <my-hero-detail></my-hero-detail>
@@ -1719,7 +1719,7 @@ export class AppModule { }
 
 Angular路由器，是一个外部的、可选的名为`RouterModule`的Angular NgModule。路由器是多个所提供服务（`RouterModule`）、多个指令（`RouterOutlet`、`RouterLink`、`RouterLinkActive`）以及一个配置（`Routes`）的组合（an external, optional Angular NgModule called `RouterModule`, The Router is a combination of multiple provided services(`RouterModule`)， multiple directives(`RouterOutlet`, `RouterLink`, `RouterLinkActive`), and a configuration(`Routes`)）。下面将首先配置这些路由。
 
-#### 加入基础标签（Add the base tag）
+#### 加入基础标记（Add the base tag）
 
 打开`index.html`文件，在`<head>`部分的顶部加入`<base href="/">`。
 
@@ -1810,4 +1810,14 @@ export class AppModule {
 }
 ```
 
+> 这里使用了`forRoot`方法，这是因为这里是将一个配置好的路由器，在应用的*根*处加以提供的。该`forRoot`方法给出了路由所需的多个路由器服务提供者及指令，并完成给予当前浏览器URL的早期导航（we use the `forRoot` method because we're providing a configured router at the *root* of the application. The `forRoot` method gives us the Router service providers and directives needed for routing, and performs the initial navigation based on the current browser URL）。
 
+#### 关于路由器出口（Router Outlet）
+
+加入现在将该路径`/heroes`粘贴到浏览器的地址栏，那么该路由器将匹配其到这个`heroes`路由，并显示出`HeroesComponent`，但是要在哪里显示呢（if we paste the path, `/heroes`, inot the browser address bar, the router should match it to the `heroes` route and display the `HeroesComponent`. But where）？
+
+因此就必须要通过在模板（the template, 指的是应用外壳的模板了）的底部，加入一个`<router-outlet>`元素，来***告诉路由器在哪里***显示`HeroesComponent`。`RouterOutlet`指令是由`RouterModule`所提供的指令之一。在我们贯穿整个应用进行导航时，路由器将在`<router-outlet>`之下，立即显示出各个组件。
+
+#### 路由器链接（Router Links）
+
+我们肯定不期望由用户来将某个路由URL粘贴到地址栏的。所以就要将一个锚点标记, 加入到模板（*译者注*：当然也是指应用外壳组件的模板），在点击该锚点标记时，就激发到`HeroesComponent`组件的导航。
