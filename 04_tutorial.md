@@ -7,14 +7,14 @@
 在本教程中，当然只会取得一点点进步。但这里所构建的应用，将包含在一个成熟的、数据驱动的应用中，所期望能找到的众多特性：英雄列表的获取及现实、编辑所选定英雄的信息，以及在英雄数据的不同视图之间的导航。
 
 英雄之旅涵盖了Angular的一些核心基础知识点。
-+ 这里将用到一些内建的指令（built-in directives），来显示或隐藏页面元素，以及英雄数据清单的显示。
-+ 将建立一个组件来现实英雄详细信息，并建立另一个组件，来显示一个英雄的数组（an array of heroes）。
-+ 对于那些只读数据（read-only data）, 这里将使用单项数据绑定（one-way data binding）。
-+ 将加入可编辑字段，来对带有双向数据绑定的某个模型加以更新（add editable fields to update a model with two-way data binding）。
-+ 这里将把一些组件方法，绑定到注入按键及鼠标点击这样的用户事件（bind component methods to user events like key strokes and clicks）。
-+ 将学习从某个主清单中选择一个英雄，并在详情视图中加以编辑（learn to select a hero from a master list and edit that hero in the details view）。
-+ 将使用管道对数据进行格式化操作（format data with pipes）。将建立一个共享服务，来对这些英雄加以集合（create a shared service to assemble our heroes）。
-+ 还将使用路由在不同视图及其组件之间进行导航（use routing to navigate among different views and their components）。
+- 这里将用到一些内建的指令（built-in directives），来显示或隐藏页面元素，以及英雄数据清单的显示。
+- 将建立一个组件来现实英雄详细信息，并建立另一个组件，来显示一个英雄的数组（an array of heroes）。
+- 对于那些只读数据（read-only data）, 这里将使用单项数据绑定（one-way data binding）。
+- 将加入可编辑字段，来对带有双向数据绑定的某个模型加以更新（add editable fields to update a model with two-way data binding）。
+- 这里将把一些组件方法，绑定到注入按键及鼠标点击这样的用户事件（bind component methods to user events like key strokes and clicks）。
+- 将学习从某个主清单中选择一个英雄，并在详情视图中加以编辑（learn to select a hero from a master list and edit that hero in the details view）。
+- 将使用管道对数据进行格式化操作（format data with pipes）。将建立一个共享服务，来对这些英雄加以集合（create a shared service to assemble our heroes）。
+- 还将使用路由在不同视图及其组件之间进行导航（use routing to navigate among different views and their components）。
 
 这里将学习到足够的Angular核心知识，以开始Angular应用的编写，并获取到可令Angular实现我们想要的功能的信心。这里将涵盖到很多入门级别的基础知识，涉及到这些知识的时候，文档会提供足够多到其它章节的链接，以便深入了解这些知识点。
 
@@ -220,10 +220,10 @@ export class AppModule { }
 
 这里要把已经建立的内容，进行盘点一下：
 
-+ 英雄之旅应用使用了双花括符的插值（一种单向数据绑定的方式，*译者注：那么还有其它类型的插值了*，the double curly braces of interpolation, a kind of one-way data binding），来现实应用的标题及`Hero`对象的属性。
-+ 这里使用ES2015的模板字符串，编写了一个多行模板，来令到这里的模板具有更高的可读性。
-+ 在使用内建的`ngModel`指令，加入了双向数据绑定到`<input>`元素后，就可以同时显示并修改英雄的名字了。
-+ 该`ngModel`指令还可以将修改传播到所有其它的`hero.name`的绑定（the `ngModel` directive also propagates changes to every binding of the `hero.name`）。
+- 英雄之旅应用使用了双花括符的插值（一种单向数据绑定的方式，*译者注：那么还有其它类型的插值了*，the double curly braces of interpolation, a kind of one-way data binding），来现实应用的标题及`Hero`对象的属性。
+- 这里使用ES2015的模板字符串，编写了一个多行模板，来令到这里的模板具有更高的可读性。
+- 在使用内建的`ngModel`指令，加入了双向数据绑定到`<input>`元素后，就可以同时显示并修改英雄的名字了。
+- 该`ngModel`指令还可以将修改传播到所有其它的`hero.name`的绑定（the `ngModel` directive also propagates changes to every binding of the `hero.name`）。
 
 
 下面是现在完整的`app.component.ts`:
@@ -679,9 +679,9 @@ export class AppComponent {
 
 下面是本章所达成的一些目标：
 
-+ 现在我们的英雄之旅应用显示了一个可选择的英雄清单。
-+ 加入了选择某名英雄并展示其详细信息的能力。
-+ 学习了在组件模板中怎样来使用内建的`ngIf`与`ngFor`指令
+- 现在我们的英雄之旅应用显示了一个可选择的英雄清单。
+- 加入了选择某名英雄并展示其详细信息的能力。
+- 学习了在组件模板中怎样来使用内建的`ngIf`与`ngFor`指令
 
 请在[现场示例](https://angular.io/resources/live-examples/toh-2/ts/eplnkr.html)来运行这一部分。
 
@@ -1046,10 +1046,10 @@ export class AppModule { }
 
 让我们来对已经构建的部分做一个盘点：
 
-+ 建立了一个可重用的组件
-+ 学习了怎样令到某个组件接受输入
-+ 学习了在某个Angular模块中声明所需要的一些应用的指令。我们将这些指令在`NgModule`装饰器的`declarations`数组中列出（we learned to declare the application directives we need in an Angular module. We list the directives in the `NgModule` decorator's `declarations` array）。
-+ 学习了将某个父组件绑定到某个子组件。
+- 建立了一个可重用的组件
+- 学习了怎样令到某个组件接受输入
+- 学习了在某个Angular模块中声明所需要的一些应用的指令。我们将这些指令在`NgModule`装饰器的`declarations`数组中列出（we learned to declare the application directives we need in an Angular module. We list the directives in the `NgModule` decorator's `declarations` array）。
+- 学习了将某个父组件绑定到某个子组件。
 
 请允许此部分的[现场示例](https://angular.io/resources/live-examples/toh-3/ts/eplnkr.html)。
 
@@ -1213,9 +1213,9 @@ heroService = new HeroService() //千万不要这样做
 
 但由于包括以下这些等的诸多原因，这是一个不好的想法：
 
-+ 这样做组件就必须知道怎样来建立一个`HeroService`。如对`HeroService`构建器有所改变，就必须找到这样的建立了该服务的所有地方，并一一加以修正才行。四处给代码打补丁会造成错误，且增加测试负担。
-+ 在每次使用到`new`关键字时，就创建出一个服务。而加入该服务将对英雄进行缓存并与其它一些服务共享该缓存时，会怎样呢？我们不能那样做。
-+ 这样做就将`AppComponent`锁定到该`HeroService`的某种特定部署之中。对于不同场景要变换不同部署就将变得困难。还有就是可以离线运行吗？在测试时需要不同的模拟数据版本时会怎样呢？都不容易做到。
+- 这样做组件就必须知道怎样来建立一个`HeroService`。如对`HeroService`构建器有所改变，就必须找到这样的建立了该服务的所有地方，并一一加以修正才行。四处给代码打补丁会造成错误，且增加测试负担。
+- 在每次使用到`new`关键字时，就创建出一个服务。而加入该服务将对英雄进行缓存并与其它一些服务共享该缓存时，会怎样呢？我们不能那样做。
+- 这样做就将`AppComponent`锁定到该`HeroService`的某种特定部署之中。对于不同场景要变换不同部署就将变得困难。还有就是可以离线运行吗？在测试时需要不同的模拟数据版本时会怎样呢？都不容易做到。
 
 *如果这样...，如果那样...，就有大量的事情要做了！*
 
@@ -1527,11 +1527,11 @@ export const HEROES: Hero[] = [
 
 现在盘点一下以及建立的东西：
 
-+ 创建了一个可被多个组件共享的服务类（a service class）
-+ 在`AppComponent`激活时，使用了`ngOnInit`生命周期钩子，来获取我们的那些英雄
-+ 将`HeroService`定义为了`AppComponent`的一个提供者
-+ 建立了模拟英雄数据，并将它们导入到了这里的服务中
-+ 这里将服务设计为返回一个承诺Promise，且组件是从该Promise获取到数据的
+- 创建了一个可被多个组件共享的服务类（a service class）
+- 在`AppComponent`激活时，使用了`ngOnInit`生命周期钩子，来获取我们的那些英雄
+- 将`HeroService`定义为了`AppComponent`的一个提供者
+- 建立了模拟英雄数据，并将它们导入到了这里的服务中
+- 这里将服务设计为返回一个承诺Promise，且组件是从该Promise获取到数据的
 
 请运行本章的[现场示例](https://angular.io/resources/live-examples/toh-4/ts/eplnkr.html)。
 
@@ -1565,10 +1565,10 @@ export const HEROES: Hero[] = [
 
 我们已经收到英雄之旅应用的新需求了：
 
-+ 添加一个*仪表盘（Dashboard）*的视图。
-+ 在*多英雄*与*仪表盘*视图之间进行导航。
-+ 通过在两个视图的某位英雄上点击，来导航到所选英雄的详细信息视图。
-+ 通过点击某个email中的*深入（deep）*链接，来打开某位特定英雄的详细信息视图。
+- 添加一个*仪表盘（Dashboard）*的视图。
+- 在*多英雄*与*仪表盘*视图之间进行导航。
+- 通过在两个视图的某位英雄上点击，来导航到所选英雄的详细信息视图。
+- 通过点击某个email中的*深入（deep）*链接，来打开某位特定英雄的详细信息视图。
 
 ![导航图示](images/nav-diagram.png)
 
@@ -1598,11 +1598,11 @@ npm start
 
 下面是我们的计划：
 
-+ 将`AppComponent`转变为仅处理导航的应用壳（an application shell）。
-+ 将*多英雄*关注点从当前的`AppComponent`，迁移到一个单独的`HeroesComponent`（relocate the *Heroes* concerns within the current `AppComponent` to a separate `HeroesComponent`, *译者注：* 这实际上上一步的延续，且其中的关注点concerns，就是关注点分离Separation of concerns中所指的关注点）。
-+ 加入路由。
-+ 建立一个新的`DashboardComponent`
-+ 将*仪表盘（Dashboard）*捆绑到导航结构（the navigation structure）中去。
+- 将`AppComponent`转变为仅处理导航的应用壳（an application shell）。
+- 将*多英雄*关注点从当前的`AppComponent`，迁移到一个单独的`HeroesComponent`（relocate the *Heroes* concerns within the current `AppComponent` to a separate `HeroesComponent`, *译者注：* 这实际上上一步的延续，且其中的关注点concerns，就是关注点分离Separation of concerns中所指的关注点）。
+- 加入路由。
+- 建立一个新的`DashboardComponent`
+- 将*仪表盘（Dashboard）*捆绑到导航结构（the navigation structure）中去。
 
 > *路由*是*导航*的另一个名称。而*路由器*则是实现视图之间导航的机制（*Routing* is another name for *navigation*. The *Router* is the mechanism for navigating from view to view）。
 
@@ -1620,9 +1620,9 @@ npm start
 
 那么要重命名的步骤有下面这些：
 
-+ 将`app.component.ts`重命名为`heroes.component.ts`
-+ 将`AppComponent`类，重命名为`HeroesComponent`（在本地进行重命名，*仅*在这个文件中）
-+ 将选择器`my-app`重命名为`my-heroes`
+- 将`app.component.ts`重命名为`heroes.component.ts`
+- 将`AppComponent`类，重命名为`HeroesComponent`（在本地进行重命名，*仅*在这个文件中）
+- 将选择器`my-app`重命名为`my-heroes`
 
 `app/hero.component.ts`（仅显示重命名的项目）
 
@@ -1634,6 +1634,180 @@ export class HeroesComponent implements OnInit {
 }
 ```
 
-#### 创建*AppComponent*
+### 创建*AppComponent*
+
+新的`AppComponent`将作为应用的外壳（the application shell）。它将有一些位于顶部的导航链接，以及页面下方用于所要导航到页面的一个显示区域（it will have some navigation links at the top and a display area below for the pages we navigate to）。
+
+下面是开头的几步：
+
+- 建立`app/app.component.ts`文件。
+- 定义一个导出的`AppComponent`类。
+- 在该类上面加入一个带有`my-app`选择器的`@Component`装饰器。
++ 将下面这些内容，从`HeroesComponent`移到`AppComponent`中：
+   - 类熟悉`title`
+   - `@Component`模板的`<h1>`元素，该元素包含了一个到`title`的绑定
+
+- 在紧接着大标题的下面，计入一个`<my-heroes>`元素，如此就将看到那些英雄。
+- 将`HeroesComponent`加入到`AppModule`的`providers`数组，如此Angular便认识`<my-heroes>`标记了。
+- 将`HeroService`加入到`AppModule`的`providers`数组, 因为在其它所有视图中，都将需要该服务。
+- 从`HeroesComponent`的`providers`数组中移除`HeroService`，因为该服务已被提升到`AppModule`的`providers`数组中了。
+- 加入`AppComponent`中的那些支持性的`import`语句。
+
+先期草案如下面这样：
+
+`app/app.component.ts(v1)`:
+
+```typescript
+import { Component } from '@angular/core'
+
+@Component ({
+    selector: 'my-app',
+    template: `
+        <h1>{{title}}</h1>
+        <my-heroes></my-heroes>
+    `
+})
+
+export class AppComponent {
+    title = '英雄之旅'
+}
+```
+
+`app/app.module.ts(v1)`:
+
+```typescript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms'
+
+// 下面两个是Angular 2 Materialize 有关的导入
+import { MaterialModule } from '@angular/material'
+import 'hammerjs';
+
+import { AppComponent } from './app.component';
+import { HeroesComponent } from './heroes.component'
+import { HeroService } from './hero.service'
+import { HeroDetailComponent } from './hero-detail.component'
+
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot()
+    ],
+    providers: [
+        HeroService
+    ],
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+应用仍将运行并显示出那些英雄。这里将`AppComponent`重构为一个`AppComponent`和`HeroesComponent`成功了！我们无害地完成了这个重构（we have done no harm）。
+
+### 加入路由（Add Routing）
+
+现在已准备好了进行下一步。我们想要在用户点击一个按钮*之后*，才显示出那些英雄，而不是自动地显示他们。换句话说，我们是想要导航到英雄清单（we would like to navigate to the list of heroes）。
+
+这里就需要Angular的*路由器*特性了（the Angular *Router*）。
+
+Angular路由器，是一个外部的、可选的名为`RouterModule`的Angular NgModule。路由器是多个所提供服务（`RouterModule`）、多个指令（`RouterOutlet`、`RouterLink`、`RouterLinkActive`）以及一个配置（`Routes`）的组合（an external, optional Angular NgModule called `RouterModule`, The Router is a combination of multiple provided services(`RouterModule`)， multiple directives(`RouterOutlet`, `RouterLink`, `RouterLinkActive`), and a configuration(`Routes`)）。下面将首先配置这些路由。
+
+#### 加入基础标签（Add the base tag）
+
+打开`index.html`文件，在`<head>`部分的顶部加入`<base href="/">`。
+
+`index.html(base-ref)`:
+
+```html
+<head>
+    <base href="/">
+```
+
+> 这里的基本HREF是必须的（BASE HREF IS ESSENTIAL）。请查阅[路由器]章节的*基本href*部分，以了解为何这很重要。
+
+#### 配置那些路由（Configure routes）
+
+我们的应用现在一个路由都还没有。所以就从给应用的那些路由，建立一个配置开始（we'll start by creating a configuration for the application routes）。
+
+*路由（Routes）*告诉路由器在用户点击某个链接或将某个URL粘贴到浏览器的地址栏时，要显示出哪个视图。
+
+下面就让我们定义这里的第一个路由，将其定义为一个到多英雄组件的路由：
+
+`app/app.module.ts(多英雄的路由)`：
+
+```typescript
+import { RouterModule } from '@angular/router'
+
+RouterModule.forRoot([
+    {
+        path: 'heroes',
+        component: HeroesComponent
+    }
+])
+```
+
+`Routes`就是一个*路由定义（route definitions）*的数组。此时只有一个路由定义，但请放心，后面将加入更多的路由定义。
+
+该*路由定义*有着以下部分：
+
+- **路径（path）**：路由器将把该路由的路径，与浏览器地址栏中的URL进行匹配（`heroes`）。
+- **组件（component）**: 在导航到该路由时，路由器将创建的组件（`HeroesComponent`）。
+
+> 在[路由（Routing）]()章节，可了解到更多有关使用`Routes`进行路由定义的知识。
+
+#### 令到路由器可用（Make the router available）
+
+上面已经设置好了最初的路由配置了。现在将把该路由配置，加入到`AppModule`。我们将把这里配置好的`RouterModule`，加入到`AppModule`的导入数组。
+
+`app/app.module.ts(app 路由)`：
+
+```typescript
+import { NgModule } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import { BrowserModule } from '@angular/platform-browser'
+import { FormsModule } from '@angular/forms'
+
+// 下面两个是 Angular 2 Materialize有关的导入
+import { MaterialModule } from '@angular/material'
+import 'hammerjs'
+
+import { AppComponent } from './app.component';
+import { HeroesComponent } from './heroes.component'
+import { HeroService } from './hero.service'
+import { HeroDetailComponent } from './hero-detail.component'
+
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot(),
+        RouterModule.forRoot([
+            {
+                path: 'heroes',
+                component: HeroesComponent
+            }
+        ])
+    ],
+    providers: [
+        HeroService
+    ],
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule {
+}
+```
 
 
