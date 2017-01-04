@@ -1734,11 +1734,11 @@ Angular路由器，是一个外部的、可选的名为`RouterModule`的Angular 
 
 #### 配置那些路由（Configure routes）
 
-我们的应用现在一个路由都还没有。所以就从给应用的那些路由，建立一个配置开始（we'll start by creating a configuration for the application routes）。
+我们的应用现在一条路由都还没有。所以就从给应用的那些路由，建立一个配置开始（we'll start by creating a configuration for the application routes）。
 
 *路由（Routes）*告诉路由器在用户点击某个链接或将某个URL粘贴到浏览器的地址栏时，要显示出哪个视图。
 
-下面就让我们定义这里的第一个路由，将其定义为一个到多英雄组件的路由：
+下面就让我们定义这里的第一条路由，将其定义为一个到多英雄组件的路由：
 
 `app/app.module.ts(多英雄的路由)`：
 
@@ -1753,7 +1753,7 @@ RouterModule.forRoot([
 ])
 ```
 
-`Routes`就是一个*路由定义（route definitions）*的数组。此时只有一个路由定义，但请放心，后面将加入更多的路由定义。
+`Routes`就是一个*路由定义（route definitions）*的数组。此时只有一条路由定义，但请放心，后面将加入更多的路由定义。
 
 该*路由定义*有着以下部分：
 
@@ -1810,7 +1810,7 @@ export class AppModule {
 }
 ```
 
-> 这里使用了`forRoot`方法，这是因为这里是将一个配置好的路由器，在应用的*根*处加以提供的。该`forRoot`方法给出了路由所需的多个路由器服务提供者及指令，并完成给予当前浏览器URL的早期导航（we use the `forRoot` method because we're providing a configured router at the *root* of the application. The `forRoot` method gives us the Router service providers and directives needed for routing, and performs the initial navigation based on the current browser URL）。
+> 这里使用了`forRoot`方法，这是因为这里是将一个配置好的路由器，在应用的*根*处加以提供的。该`forRoot`方法给出了路由所需的多条路由器服务提供者及指令，并完成给予当前浏览器URL的早期导航（we use the `forRoot` method because we're providing a configured router at the *root* of the application. The `forRoot` method gives us the Router service providers and directives needed for routing, and performs the initial navigation based on the current browser URL）。
 
 #### 关于路由器出口（Router Outlet）
 
@@ -1820,7 +1820,7 @@ export class AppModule {
 
 #### 路由器链接（Router Links）
 
-我们肯定不期望由用户来将某个路由URL粘贴到地址栏的。所以就要将一个锚点标记, 加入到模板（*译者注*：当然也是指应用外壳组件的模板），在点击该锚点标记时，就激发到`HeroesComponent`组件的导航。
+我们肯定不期望由用户来将某条路由URL粘贴到地址栏的。所以就要将一个锚点标记, 加入到模板（*译者注*：当然也是指应用外壳组件的模板），在点击该锚点标记时，就激发到`HeroesComponent`组件的导航。
 
 请注意该锚点标记中的`routerLink`绑定。这里将该`RouterLink`指令（`RouterModule`诸多指令中的另一个）, 绑定到一个告诉路由器在用户点击该链接时，导航到某个地方的字符串（we bind the `RouterLink` directive(another of the `RouterModule` directives) to a string that tells the router where to navigate when the user clicks the link）。
 
@@ -1855,7 +1855,7 @@ export class AppComponent {
 }
 ```
 
-现在的*AppComponent*附加到了一个路由器上，且显示那些受路由的视图（The *AppComponent* is now attached to a router and displaying routed views）。因为这个原因，且为将其与其它类型的组件有所区别，我们将这类组件叫做*路由器组件（a Router Component）*。
+现在的*AppComponent*附加到了一条路由器上，且显示那些受路由的视图（The *AppComponent* is now attached to a router and displaying routed views）。因为这个原因，且为将其与其它类型的组件有所区别，我们将这类组件叫做*路由器组件（a Router Component）*。
 
 ### 加入一个*仪表盘（Dashboard）*
 
@@ -1960,7 +1960,7 @@ export class AppComponent {
 
 这里使用了一个指向到一个新的模板文件的`templateUrl`属性（a `templateUrl` property that points to a new template file），对`template`元数据进行替换。
 
-同时为解决该`templateUrl`的模块有关的装入问题，而将`moduleId`属性设置为了`module.id`（set the `moduleId` property to `module.id` for module-relative of the `templateUrl`）。
+同时为解决该`templateUrl`的模块有关的装入问题，而将`moduleId`属性设置为了`module.id`（set the `moduleId` property to `module.id` for module-relative of the `templateUrl`，*译者注：*这里的`module.id`会在NetBeans中报错，后续会解释其用途）。
 
 `app/dashboard.component.ts(元数据部分)`：
 
@@ -2035,3 +2035,129 @@ export class DashboardComponent implements OnInit {
 
 - 定义一个`heroes`数组属性。
 - 在那个构建器中注入`HeroService`并将其保留在一个私有的`heroService`字段中（a private `heroService` field）。
+- 在Angular的`ngOnInit`生命周期钩子内部，调用该服务来获取到英雄
+
+在这个仪表盘中，我们使用`Array.slice`方法，择优挑选（cherry-pick）了4名英雄（第二、第三、第四和第五名）。
+
+刷新浏览器就可以在新的仪表盘中看到4名英雄。
+
+### 导航到英雄详细信息
+
+虽然我们在`HeroesComponent`的底部显示出了所选英雄的详细信息，但现在仍然没有以需求中的三种指定方式，来导航到`HeroDetailComponent`：
+
+- 从*仪表盘*导航到某名选定的英雄。
+- 从*多英雄*清单导航到某名选定英雄。
+- 从粘贴到浏览器地址栏的某个“深链接（deep link）”URL导航到某名英雄。
+
+那么显而易见，加入一个英雄详细信息路由，就是现在要开始的地方了。
+
+#### 路由到某个英雄详细信息
+
+这里将在`app.module.ts`中，也就是其它路由所配置的地方，加入一条到`HeroDetailComponent`的路由。
+
+比起前面的那些路由，这条新的路由有着些许不同，在该路由中，我们必须告诉`HeroDetailComponent`*要显示哪名英雄*。而在上面的`HeroesComponent`或`DashboardComponent`中，是不必告诉它们什么的。
+
+此时，父组件`HeroesComponent`通过一个下面的绑定，将`HeroDetailComponent`的`hero`属性设置为一个英雄对象（a hero object）。
+
+```html
+<my-hero-detail [hero]="selectedHero"></my-hero-detail>
+```
+
+那种做法无疑在所有的路由场景都不会工作起来。在最后一种情况下当然也不行；原因在于我们是无法将整个的英雄对象嵌入到URL中的！同时我们也不会想要那样做（that clearly won't work in any of our routing scenarios. Certainly not the last one; we can't embed an entire hero object in the URL! Nor would we want to）。
+
+#### 参数化的路由（Parameterized route）
+
+这里可将英雄的`id`加入到URL。比如在路由至某名`id`为11的英雄时，就可以期望看到一个像下面这样的URL：
+
+```javascript
+/detail/11
+```
+
+那个URL中的`/detail/`部分，是一个常量。跟着的数字`id`部分就随英雄的不同而变化。这就需要使用一个代表英雄`id`的*参数或令牌（a parameter(or token)），来表示该路由的可变部分。
+
+#### 配置有着一个参数的路由（Configure a Route with a Parameter）
+
+下面就是将用到的*路由定义（route definition）*:
+
+```typescript
+{
+    path: 'detail/:id',
+    component: HeroDetailComponent
+}
+```
+
+路径中的冒号（`:`），表明`:id`是一个在导航至`HeroDetailComponent`时，将用某个特定英雄`id`填充的占位符。
+
+这里就完成了本应用的路由配置了（we're finished with the application routes）。
+
+这里不会将一个`Hero Detail`链接，添加到应用外壳`app.component.ts`的模板，因为用户不会去点击导航*链接*来查看某名特定英雄。他们会点击现实在仪表盘上或英雄清单中的某名*英雄*。
+
+在本章后面，我们将获取到这些英雄的点击。在将`HeroDetailComponent`准备好被导航之前，都没有要对这些点击进行处理的切入点（we'll get to those *hero* clicks later in the chapter. There's no point in working on them until the `HeroDetailComponent` is ready to be navigated to）。
+
+而要将`HeroDetailComponent`准备好被导航，就需要对其进行大的改动。
+
+### 修订*HeroDetailComponent*（Revise the *HeroDetailComponent*）
+
+在重新编写`HeroDetailComponent`之前，先来看看它现在的样子：
+
+```typescript
+import { Component, Input } from '@angular/core'
+
+import { Hero } from './hero';
+
+@Component({
+    selector: 'my-hero-detail',
+    template: `
+        <div *ngIf="hero != undefined">
+            <h2>{{hero.name}} details!</h2>
+            <div><label>id: </label>{{hero.id}}</div>
+            <md-input-container>
+                <input md-input id="name" [(ngModel)]="hero.name" placeholder="名 字" />
+            </md-input-container>
+        </div>
+    `
+})
+
+export class HeroDetailComponent {
+    @Input()
+    hero: Hero;
+}
+```
+
+其模板不会改动。我们将以同样方式来显示某名英雄。大的变动在于我们以何种方式来获取到英雄。
+
+这里将不再从某个父组件的属性绑定（property binding）中接收英雄。新的`HeroDetailComponent`应从于`ActivatedRoute`服务中可观察到的`params`中，取得`id`参数，并使用`HeroService`以该`id`来获取到对应英雄（the new `HeroDetailComponent` should take the `id` from the `params` observable in the `ActivatedRoute` service and use the `HeroService` to fetch the hero with that `id`）。
+
+首先，加入必要的一些导入：
+
+```typescript
+import { Component, Input, OnInit } from '@angular/core'
+import { ActivatedRoute, Params } from '@angular/router'
+import { Location } from '@angular/common'
+
+import { HeroService } from './hero.service'
+```
+
+接着将`ActivatedRoute`服务、`HeroService`与`Location`服务都注入到构建器中，将它们的值保存在一些私有字段中（let's have the `ActivatedRoute` service, the `HeroService` and the `Location` service injected into the constructor, saving their values in private fields）:
+
+```typescript
+    constructor(
+        private heroService: HeroService,
+        private route: ActivatedRoute,
+        private location: Location
+    ) {}
+```
+
+还要导入`switchMap`操作符，以便稍后与路由参数`Observable`一同使用（also import the `switchMap` operator to use later with the route parameter `Observable`）。
+
+```typescript
+import 'rxjs/add/operator/switchMap'
+```
+
+告诉该类我们打算应用`OnInit`接口。
+
+```typescript
+export class HeroDetailComponent implements OnInit{
+```
+
+在`ngOnInit`生命周期钩子内部，使用`params`这个可观测量（the `params` observable），从`ActivatedRoute`服务提取出`id`
