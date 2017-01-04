@@ -1537,7 +1537,7 @@ export const HEROES: Hero[] = [
 
 #### 后面的路
 
-使用共享组件与服务后，英雄之旅应用已变得更具可重用性了。现在打算创建一个仪表盘（dashboard）、加入在不同视图之间路由的菜单链接，并在模板中进行数据的格式操作。随着应用的进化，我们将学习对其进行怎样的设计，以令其更加易于成长和维护。
+使用共享组件与服务后，英雄之旅应用已变得更具可重用性了。现在打算创建一个看板（dashboard）、加入在不同视图之间路由的菜单链接，并在模板中进行数据的格式操作。随着应用的进化，我们将学习对其进行怎样的设计，以令其更加易于成长和维护。
 
 ### 附录：令其慢下来
 
@@ -1565,8 +1565,8 @@ export const HEROES: Hero[] = [
 
 我们已经收到英雄之旅应用的新需求了：
 
-- 添加一个*仪表盘（Dashboard）*的视图。
-- 在*多英雄*与*仪表盘*视图之间进行导航。
+- 添加一个*看板（Dashboard）*的视图。
+- 在*多英雄*与*看板*视图之间进行导航。
 - 通过在两个视图的某位英雄上点击，来导航到所选英雄的详细信息视图。
 - 通过点击某个email中的*深入（deep）*链接，来打开某位特定英雄的详细信息视图。
 
@@ -1602,7 +1602,7 @@ npm start
 - 将*多英雄*关注点从当前的`AppComponent`，迁移到一个单独的`HeroesComponent`（relocate the *Heroes* concerns within the current `AppComponent` to a separate `HeroesComponent`, *译者注：* 这实际上上一步的延续，且其中的关注点concerns，就是关注点分离Separation of concerns中所指的关注点）。
 - 加入路由。
 - 建立一个新的`DashboardComponent`
-- 将*仪表盘（Dashboard）*捆绑到导航结构（the navigation structure）中去。
+- 将*看板（Dashboard）*捆绑到导航结构（the navigation structure）中去。
 
 > *路由*是*导航*的另一个名称。而*路由器*则是实现视图之间导航的机制（*Routing* is another name for *navigation*. The *Router* is the mechanism for navigating from view to view）。
 
@@ -1857,7 +1857,7 @@ export class AppComponent {
 
 现在的*AppComponent*附加到了一条路由器上，且显示那些受路由的视图（The *AppComponent* is now attached to a router and displaying routed views）。因为这个原因，且为将其与其它类型的组件有所区别，我们将这类组件叫做*路由器组件（a Router Component）*。
 
-### 加入一个*仪表盘（Dashboard）*
+### 加入一个*看板（Dashboard）*
 
 只有在有着多个视图时，路由才有意义。所以我们需要另一个视图。
 
@@ -1880,13 +1880,13 @@ export class DashboardComponent {}
 
 后面我们将回到这里并令其更为有用。
 
-#### 配置该仪表盘的路由（Configure the dashboard route）
+#### 配置该看板的路由（Configure the dashboard route）
 
-回到`app.module.ts`并教会其导航到仪表盘。
+回到`app.module.ts`并教会其导航到看板。
 
-导入该仪表盘组件，并将下面的路由定义添加到`Routes`的定义数组（the `Routes` array of definitions）。
+导入该看板组件，并将下面的路由定义添加到`Routes`的定义数组（the `Routes` array of definitions）。
 
-`app/app.module.ts(仪表盘路由部分)`：
+`app/app.module.ts(看板路由部分)`：
 
 ```typescript
 {
@@ -1897,7 +1897,7 @@ export class DashboardComponent {}
 
 同时还要将`DashboardComponent`导入并添加到`AppModule`的`declarations`。
 
-`app/app.module.ts(仪表盘部分)`:
+`app/app.module.ts(看板部分)`:
 
 ```typescript
 declarations: [
@@ -1910,7 +1910,7 @@ declarations: [
 
 ### 重定向到（REDIRECTTO）
 
-这里打算在应用启动时显示出仪表盘，且想要在浏览器的地址栏看到一个美观的URL为`/dashboard`。但请记住目前浏览器地址栏中现在还显示的是`/`。
+这里打算在应用启动时显示出看板，且想要在浏览器的地址栏看到一个美观的URL为`/dashboard`。但请记住目前浏览器地址栏中现在还显示的是`/`。
 
 这里可以使用一个重定向路由（a redirect route）来达到这个目的。将下面的代码，加入到路由定义数组中：
 
@@ -1928,7 +1928,7 @@ declarations: [
 
 #### 将导航添加到模板（ADD NAVIGATION TO THE TEMPLATE）
 
-最后，将一个仪表盘的导航链接添加到模板，就如同上面的*Heroes*链接一样。
+最后，将一个看板的导航链接添加到模板，就如同上面的*Heroes*链接一样。
 
 `app/app.component.ts(模板-v3)`:
 
@@ -1952,11 +1952,11 @@ export class AppComponent {
 }
 ```
 
-前往到应用的根处（`/`）并重新载入，就可以在浏览器中看到改变。应用将显示出仪表盘，同时我们可以在仪表盘和多英雄视图之间进行导航。
+前往到应用的根处（`/`）并重新载入，就可以在浏览器中看到改变。应用将显示出看板，同时我们可以在看板和多英雄视图之间进行导航。
 
-### 将顶级英雄放入仪表盘（Dashboard Top Heroes）
+### 将顶级英雄放入看板（Dashboard Top Heroes）
 
-这里将通过将四位顶级英雄醒目地显示出来的方式，令到仪表盘更为有趣。
+这里将通过将四位顶级英雄醒目地显示出来的方式，令到看板更为有趣。
 
 这里使用了一个指向到一个新的模板文件的`templateUrl`属性（a `templateUrl` property that points to a new template file），对`template`元数据进行替换。
 
@@ -2037,15 +2037,15 @@ export class DashboardComponent implements OnInit {
 - 在那个构建器中注入`HeroService`并将其保留在一个私有的`heroService`字段中（a private `heroService` field）。
 - 在Angular的`ngOnInit`生命周期钩子内部，调用该服务来获取到英雄
 
-在这个仪表盘中，我们使用`Array.slice`方法，择优挑选（cherry-pick）了4名英雄（第二、第三、第四和第五名）。
+在这个看板中，我们使用`Array.slice`方法，择优挑选（cherry-pick）了4名英雄（第二、第三、第四和第五名）。
 
-刷新浏览器就可以在新的仪表盘中看到4名英雄。
+刷新浏览器就可以在新的看板中看到4名英雄。
 
 ### 导航到英雄详细信息
 
 虽然我们在`HeroesComponent`的底部显示出了所选英雄的详细信息，但现在仍然没有以需求中的三种指定方式，来导航到`HeroDetailComponent`：
 
-- 从*仪表盘*导航到某名选定的英雄。
+- 从*看板*导航到某名选定的英雄。
 - 从*多英雄*清单导航到某名选定英雄。
 - 从粘贴到浏览器地址栏的某个“深链接（deep link）”URL导航到某名英雄。
 
@@ -2090,7 +2090,7 @@ export class DashboardComponent implements OnInit {
 
 这里就完成了本应用的路由配置了（we're finished with the application routes）。
 
-这里不会将一个`Hero Detail`链接，添加到应用外壳`app.component.ts`的模板，因为用户不会去点击导航*链接*来查看某名特定英雄。他们会点击现实在仪表盘上或英雄清单中的某名*英雄*。
+这里不会将一个`Hero Detail`链接，添加到应用外壳`app.component.ts`的模板，因为用户不会去点击导航*链接*来查看某名特定英雄。他们会点击现实在看板上或英雄清单中的某名*英雄*。
 
 在本章后面，我们将获取到这些英雄的点击。在将`HeroDetailComponent`准备好被导航之前，都没有要对这些点击进行处理的切入点（we'll get to those *hero* clicks later in the chapter. There's no point in working on them until the `HeroDetailComponent` is ready to be navigated to）。
 
@@ -2157,7 +2157,258 @@ import 'rxjs/add/operator/switchMap'
 告诉该类我们打算应用`OnInit`接口。
 
 ```typescript
-export class HeroDetailComponent implements OnInit{
+export class HeroDetailComponent implements OnInit {
+}
 ```
 
-在`ngOnInit`生命周期钩子内部，使用`params`这个可观测量（the `params` observable），从`ActivatedRoute`服务提取出`id`
+在`ngOnInit`生命周期钩子内部，使用`params`这个可观测量（the `params` observable），从`ActivatedRoute`服务提取出`id`这个参数值，并使用`HeroService`来获取到有着那个`id`的英雄。
+
+```typescript
+    ngOnInit(): void {
+        this.route.params
+            .switchMap((params: Params) => this.heroService.getHero(+params['id']))
+            .subscribe(hero => this.hero = hero)
+    }
+```
+
+请留意这里的`switchMap`操作符，是如何将可观察到的路由参数中的id映射到一个新的、`HeroService.getHero`方法的结果的`Observable`的（note that the `switchMap` operator maps the id in the observable route parameters to a new `Observable`, the result of the `HeroService.getHero` method）。
+
+假如在某个`getHero`请求仍在进行时，用户再度导航到此组件，那么`switchMap`就在重新调用`HeroService.getHero`之前，取消原来的请求（if the user re-navigates to this component while a `getHero` request is still inflight, `switchMap` cancels that old request before calling `HeroService.getHero` again）。
+
+英雄`id`是一个数字。路由参数却*始终是字符串*（the hero `id` is number. Route parameters are *always string*）。因此这里使用JavaScript的加号（`+`）运算符，将路由参数转换成数字。
+
+> **这里需要取消订阅吗（do I need to unsubscribe）？**
+> 路由器管理着其所提供的那些可观察量，并对那些订阅加以本地化。在组件销毁时，那些订阅也就被清理掉了，从而保护了不受内存泄露的威胁，因此我们是不需要从路由参数`Observable`进行取消订阅的（the `Router` manages the `observables` it provides and localizes the subscriptions. The subscriptions are cleaned up when the component is destroyed, protecting against memory leaks, so we don't need to *unsubscribe* from the route params `Observable`）。
+
+### 加入*HeroService.getHero*
+
+现在这些代码的问题在于，`HeroService`还没有那个`getHero`方法！在有人注意到我们破坏了应用之前，最好赶快修复这个问题。
+
+打开`HeroService`并加入这个使用`id`，来对来自`getHeroes`的英雄清单加以过滤的`getHero`方法：
+
+```typescript
+    getHero(id: Number): Promise<Hero> {
+        return this.getHeroes()
+            .then(heroes => heroes.find(hero => hero.id === id))
+    }
+```
+
+然后回到`HeroDetailComponent`去清理掉一些尾巴（let's return to the `HeroDetailComponent` clean up loose ends）。
+
+#### 找出一条回去的路（Find our way back）
+
+可以多种方式导航到`HeroDetailComponent`。而在已导航到`HeroDetailComponent`时，又该怎样导航到其它地方呢？
+
+用户可以点击`AppComponent`中两个链接之一。或是点击浏览器的后退按钮。我们将加入第三选项，一个使用到先前注入的`Location`服务、依据浏览器的历史堆栈，来完成后退一步导航的`goBack`方法。
+
+```typescript
+    goBack(): void {
+        this.location.back()
+    }
+```
+
+> 退回太远，可能会将我们带出该应用。那样做在应用的演示中可以接受。在真是应用中，就要避免这类问题的发生，一种办法就是使用[`CanDeactivate`接口防护](https://angular.io/docs/ts/latest/api/router/index/CanDeactivate-interface.html)。
+
+随后用一个事件绑定，将该方法与一个添加在组件模板底部的*后退*按钮连接起来。
+
+```html
+<button (click)="goBack()">Back</button>
+```
+
+对模板进行修改以加入该按钮，这就激励我们要采取另一项更进一步的改进，并将模板移到其自己的文件，名为`hero-detail.component.html`：
+
+`app/hero-detail.component.html`:
+
+```html
+        <div *ngIf="hero != undefined">
+            <h2>{{hero.name}} details!</h2>
+            <div><label>id: </label>{{hero.id}}</div>
+            <md-input-container>
+                <input md-input id="name" [(ngModel)]="hero.name" placeholder="名 字" />
+            </md-input-container>
+            <md-button (click)="goBack()">Back</md-button>
+        </div>
+```
+
+这里以一个`moduleId`及一个指向刚刚建立的模板文件的`templateUrl`，对组件的元数据加以更新。
+
+`app/hero-detail.component.ts(元数据部分)`：
+
+```typescript
+@Component({
+    moduleId: module.id,
+    selector: 'my-hero-detail',
+    templateUrl: 'app/hero-detail.component.html'
+})
+```
+
+请刷新浏览器并查看结果。
+
+### 选择一名*看板*英雄
+
+在用户选择了一名看板中的英雄时，应用应导航到`HeroDetailComponent`，以查看并对所选加以编辑。
+
+尽管这些看板英雄是以类似于按钮块的方式呈现的，他们却与锚点标记表现类似。在鼠标通过某个英雄块时，目标URL应现实在浏览器状态栏中，同时用户应能够将其链接进行拷贝，或是在新的标签页中打开英雄详细信息视图。
+
+为达到这种效果，请重新打开`dashboard.component.html`，将重复的`<div *ngFor...>`标记，用`<a>`标记进行替换。该开放的`<a>`看起来像下面这样：
+
+`app/dashboard.component.html(重复的<a>标记)`：
+
+```html
+<a *ngFor="let hero of heroes" [routerLink]="['./detail', hero.id]">
+```
+
+请注意这里的`[routerLink]`绑定（the `[routerLink]` binding）。
+
+`AppComponent`的模板中的顶级导航，有着一个被设置为目的路由的固定路径的路由器链接，`/dashboard`与`/heroes`。
+
+这次，我们绑定到一个包含了**链接参数数组**的表达式（an expression containing **link parameters array**）。该数组有两个元素，分别是目的路由的***路径（path）***, 以及被一个设置为当前英雄`id`值的***路由参数（route parameter）***。
+
+这两个数组条目在本章早先加入到`app.module.ts`的参数化`HeroDetailComponent`路由定义中，是以***path***及***:id****对准的。
+
+`app/app.module.ts(英雄详细信息路由定义)`：
+
+```typescript
+            {
+                path: 'detail/:id',
+                component: HeroDetailComponent
+            }
+```
+
+刷新浏览器并从看板中选择一名英雄；应用应直接导航到该名英雄的详细信息。
+
+### 将这些路由重构为一个*路由模块*（Refactor routes to a *Routing Module*）
+
+`AppModule`的将近20行，用于了4条路由的配置。大多数应用都有着多得多的路由，且它们还[加入了防护服务](https://angular.io/docs/ts/latest/guide/router.html#guards)来保护应用不受不想要的或是未授权的导航的影响。路由方面的事项，将很快主导这个模块，从而混淆了其主要目的，`app.module.ts`模块的主要目的是为Angular编译器，建立有关整个应用的一些关键信息（most applications have many more routes and they add guard services to protect against unwanted or unauthorized navigations. Routing considerations could quickly dominate this module and obscure its primary purpose which is to establish key facts about the entire app for the Angular compiler）。
+
+所以应将路由配置，重构到其自己的类中。那么要哪种类呢？当前的`RouterModule.forRoot()`生成了一个Angular的`ModuleWithProviders`，其表明一个专属于路由的类应是某种类型的模块。那应是一个[*路由模块（Routing Module）*](https://angular.io/docs/ts/latest/guide/router.html#routing-module)（what kind of class? The current `RouterModule.forRoot()` produces an Angular `ModuleWithProviders` which suggests that a class dedicated to routing should be some kind of module. It should be a *Routing Module*）。
+
+依命名规则，那么某个*路由模块*的名称，就包含了一个“Routing”，同时与声明所要导航到的组件的该模块的名称放在一起（by convention the name of a *Routing Module* contains the word "Routing" and aligns with the name of the module that declares the component navigated to）。
+
+现在建立一个`app-routing.module.ts`，作为`app.module.ts`的表亲。给予其从`AppModule`类提取出的以下内容：
+
+```typescript
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
+
+import { HeroesComponent } from './heroes.component'
+import { HeroDetailComponent } from './hero-detail.component'
+import { DashboardComponent } from './dashboard.component'
+
+const routes: Routes = [
+    { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+    { path: 'dashboard', component: DashboardComponent },
+    { path: 'detail/:id', component: HeroDetailComponent },
+    { path: 'heroes', component: HeroesComponent }
+]
+
+@NgModule({
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
+})
+
+export class AppRoutingModule {}
+```
+
+*路由模块（Rooting Modules）*的一些典型的值得注意的地方，有下面这些：
+
+- 将那些路由拉入到一个变量中。后期可能会将该变量进行导出，同时其鉴别出某个*路由模块*的模式（pulls the routes into a variable. You might export it in future and it clarifies the *Routing Module* pattern）。
+- 将`RouterModule.forRoot(routes)`添加到`imports`。
+- 将`RouterModule`添加到`exports`，从而其同伴模块中的那些组件，就能访问到诸如`RouterLink`及`RouterOutlet`这样的路由器声明了（adds `RouterModule` to `exports` so that the components in the companion module have access to Router declarables such as `RouterLink` and `RouterOutlet`）。
+- 路由模块中是没有`declarations`的！声明是同伴模块的责任（no `declarations`! Declarations are the responsibility of the companion module）。
+- 在使用到一些防护服务时，要加入那些防护服务的模块提供者`providers`；在本示例中没有用到防护服务。
+
+#### 更新*AppModule*
+
+现在要从`AppModule`中删除路由配置，并导入`AppRoutingModule`（要同时使用ES的`import`语句，*以及*将其加入到`NgModule.imports`清单）。
+
+`app/app.module.ts(更新之后)`：
+
+```typescript
+import { NgModule } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser'
+import { FormsModule } from '@angular/forms'
+
+// 下面两个是 Angular 2 Materialize有关的导入
+import { MaterialModule } from '@angular/material'
+import 'hammerjs'
+
+import { AppComponent } from './app.component'
+import { DashboardComponent } from './dashboard.component'
+import { HeroDetailComponent } from './hero-detail.component'
+import { HeroesComponent } from './heroes.component'
+import { HeroService } from './hero.service'
+
+import { AppRoutingModule } from './app-routing.module'
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot(),
+        AppRoutingModule
+    ],
+    providers: [
+        HeroService
+    ],
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent,
+        DashboardComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+`app/app.module.ts(之前)`：
+
+```typescript
+import { NgModule }       from '@angular/core';
+import { BrowserModule }  from '@angular/platform-browser';
+import { FormsModule }    from '@angular/forms';
+import { RouterModule }   from '@angular/router';
+import { AppComponent }        from './app.component';
+import { HeroDetailComponent } from './hero-detail.component';
+import { DashboardComponent }  from './dashboard.component';
+import { HeroesComponent }     from './heroes.component';
+import { HeroService }         from './hero.service';
+@NgModule({
+  imports: [
+    BrowserModule,
+    FormsModule,
+    RouterModule.forRoot([
+      {
+        path: '',
+        redirectTo: '/dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent
+      },
+      {
+        path: 'detail/:id',
+        component: HeroDetailComponent
+      },
+      {
+        path: 'heroes',
+        component: HeroesComponent
+      }
+    ])
+  ],
+  declarations: [
+    AppComponent,
+    DashboardComponent,
+    HeroDetailComponent,
+    HeroesComponent
+  ],
+  providers: [
+    HeroService
+  ],
+  bootstrap: [ AppComponent ]
+})
+export class AppModule {
+}
+```
