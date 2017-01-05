@@ -2409,6 +2409,154 @@ import { HeroService }         from './hero.service';
   ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule {
+export class AppModule {}
+```
+
+现在的`app.module.ts`更简单了，且着重于标识应用的关键部分。
+
+### 选择*HeroesComponent*中英雄
+
+前面我们加入了从看板选择英雄的能力。我们将对`HeroesComponent`做一些类似的改动。
+
+`HeroesComponent`的模板展示一个在顶部有着英雄清单、底部有着所选英雄的详细信息的`master/detail`样式。
+
+`app/heroes.component.ts(当前模板)`：
+
+```typescript
+template: `
+        <h2>My Heroes</h2>
+        <md-list class="heroes">
+            <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+                [class.selected]="hero === selectedHero">
+                <span class="badge">{{hero.id}}</span>{{hero.name}}
+            </md-list-item>
+        </md-list>
+        <my-hero-detail [hero]="selectedHero"></my-hero-detail>  
+    `
+```
+
+这里的目标是将详细信息移到其自己的视图，并在用户决定编辑所选英雄时，导航到详细信息视图。
+
+先删除顶部的`<h1>`（在`AppComponent`到`HeroesComponent`的转换过程中忘记了的）。
+
+删除有着`<my-hero-detail>`标签的模板最后一行。
+
+这里将不再现实完整的`HeroDetailComponent`了。如同在看板中那样，我们将要在其自己的页面现实英雄的详细信息，并路由至该页面。
+
+这里将为变化而抛出一个小的变种。我们将保留"master/detail"样式，但会将详细信息收缩为一个“mini”样式、只读版本（we'll throw in a small twist for variety. We are keeping the "master/detail" style but shrinking the detail to a "mini", read-only version）。在用户从清单选择了一名英雄时，将*不*前往详细信息页。而是在*该*页上显示一个*mini-detail*, 并让用户点击一个按钮来前往到*完整详细信息(full detail)*页面。
+
+#### 加入*mini-detail*
+
+在`HeroesComponent`的模板底部，原来`<my-hero-detail>`所在的地方，加入下面的HTML片段：
+
+```html
+        <div *ngIf="selectedHero != undefined">
+            <h2>
+                {{selectedHero.name | uppercase}} is my hero
+            </h2>
+            <button md-button (click)="gotoDetail()">View Details</button>
+        </div>
+```
+
+在点击了某名英雄后，用户应看到在英雄清单下有着下面的显示：
+
+![mini hero detail](images/mini-hero-detail.png)
+
+### 使用*uppercase*管道进行格式化（Format with the *uppercase* pipe）
+
+请留意英雄名字是以大写字母（CAPITAL LETTERS）显示的。那是放入那个插值绑定中的`uppercase`管道的效果。在管道操作符（`|`）的右边可以找到它。
+
+```typescript
+{{selectedHero.name | uppercase}} is my hero
+```
+
+用于对字符串、货币数量、日期及其它显示数据进行格式化，管道是一种不错的方法。Angular本身就带有多种管道，同时我们也可以编写自己的管道。
+
+> 在[管道](https://angular.io/docs/ts/latest/guide/pipes.html)章节，可以了解更多有关管道的知识。
+
+#### 将内容从组件文件移除（Move content out of the component file）
+
+现在还没完工。还必须更新组件类，来支持在用户点击*查看详细信息*按钮时，到`HeroDetailComponent`的导航。
+
+该组件文件已经相当大了。占其绝大部分的，不是模板就是CSS样式了。在HTML和CSS的干扰下，难于找到组件的逻辑。
+
+那么在做出更多改变之前，就让我们将模板和样式迁移到它们自己的文件中吧：
+
+1. 将模板内容，*剪切-并-粘贴（cut-and-paste）*到一个新的`heroes.component.html`文件中。
+2. 将样式内容，*剪切-并-粘贴（cut-and-paste）*到一个新的`heroes.component.css`文件中。
+3. 将组件元数据的`templateUrl`与`styleUrls`属性，分别设置为到这两个文件的引用。
+4. 将组件元数据的`moduleId`属性，设置为`module.id`，如此`templateUrl`与`styleUrls`便是相对于该组件的了（*Set* the `moduleId` property to `module.id` so that `templateUrl` and `styleUrls` are relative to the component， *译者注：*这里谈到了组件元数据中`moduleId`的意义，但仍未能解决NetBeans中`module.id`报错的问题）。
+
+> 属性`styleUrls`是一个样式文件名的数组（带有路径）。在需要多个样式文件时，可将这些多个不同地方的样式文件，在该数组中列出。
+
+`app/heroes.component.ts(修订后的元数据部分)`：
+
+```typescript
+@Component({
+    moduleId: module.id,
+    selector: 'my-heroes',
+    styleUrls: ['heroes.component.css'],
+    templateUrl: 'heroes.component.html'
+})
+```
+
+#### 更新*HeroesComponent*类
+
+`HeroesComponent`以导航到`HeroDetailComponent`来响应按钮的点击。该按钮的*点击（click）*事件被绑定到`gotoDetail`方法，该方法通过告诉路由器要去往那里，而*命令式地*进行导航（the button's *click* event is bound to a `gotoDetail` method that navigates *imperatively* by telling the router where to go）。
+
+这样做需要对该组件类进行一些改变：
+
+1. 从Angular的路由器库（the Angular router library）导入`router`
+2. 在构建器中注入该`router`（与`HeroService`一起）
+3. 通过调用`router.navigate`方法，实现`gotoDetail`
+
+`app/heroes.component.ts(gotoDetail方法)`：
+
+```typescript
+    gotoDetail(): void {
+        this.router.navigate(['/detail', this.selectedHero.id])
+    }
+```
+
+请注意这里传递了一个两元素的**链接参数数组**--分别为一个路径及路由参数--到`router.navigate`方法，这与我们前面在`DashboardComponent`中，在`[routerLink`绑定中所作的一样（note that we're passing a two-element **link parms array** -- a path and the route parameter -- to the `router.navigate` method just as we did in the `[routerLink]` binding back in the `DashboardComponent`）。下面是完整的修订后的`HeroesComponent`类：
+
+`app/heroes.component.ts(类的部分)`：
+
+```typescript
+export class HeroesComponent implements OnInit {
+    selectedHero: Hero
+    heroes: Hero[]
+
+    constructor(
+        private router: Router,
+        private heroService: HeroService
+    ) { }
+    
+    gotoDetail(): void {
+        this.router.navigate(['/detail', this.selectedHero.id])
+    }
+
+    getHeroes(): void {
+        //var that = this
+
+        //this.heroService.getHeroes().then(function(res) {
+        //    that.heroes = res;
+        //})
+
+        // 上面的是不用ES2015的箭头函数时的写法，下面是使用箭头函数的写法，更为简洁与优雅
+        // （无需额外的that变量, 来处理`this`的问题了）
+
+        this.heroService.getHeroes().then(res => this.heroes = res)
+    }
+
+    ngOnInit(): void {
+        this.getHeroes()
+    }
+
+    onSelect(hero: Hero): void {
+        this.selectedHero = hero;
+    }
 }
 ```
+
+
