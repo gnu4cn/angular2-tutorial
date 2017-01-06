@@ -2581,7 +2581,7 @@ export class HeroesComponent implements OnInit {
 styleUrls: ['dashboard.component.css']
 ```
 
-### 给英雄相信信息加上样式（Stylish Hero Details）
+### 给英雄详细信息加上样式（Stylish Hero Details）
 
 设计师还给了我们特别用于`HeroDetailComponent`的CSS样式集。
 
@@ -2749,5 +2749,87 @@ template: `
 ```typescript
 styleUrls: ['app.component.css'],
 ```
+
+### 全局应用样式（Global application styles）
+
+在将样式集加入到某个组件时，是将HTML、CSS、代码等某个组件所需的所有内容，一起放在一个方便的地方（when we add styles to a component, we're keeping everything a component needs -- HTML, the CSS, the code -- together in one convenient place）。将其打包在一起并在其它地方重用，都非常容易。
+
+我们同样可以在*应用级别（application level）*、所有组件外部，创建出一些样式。
+
+我们的设计师们提供了一些应用到整个app所有元素的基本样式。这些样式对应于早前在建立环境时所安装的主样式的完整集合（the full set of master styles）。下面是一个摘录：
+
+`styles.css(摘录)`:
+
+```css
+/* Master Styles */
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+h2, h3 {
+  color: #444;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
+}
+body {
+  margin: 2em;
+}
+body, input[text], button {
+  color: #888;
+  font-family: Cambria, Georgia;
+}
+/* . . . */
+/* everywhere else */
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+```
+
+如还没有`styles.css`，那么就建立该文件。确保其包含[这里提供的主样式集](https://raw.githubusercontent.com/angular/angular.io/master/public/docs/_examples/_boilerplate/styles.css)。
+
+在必要是，还要对`index.html`进行编辑，以包含这个样式表。
+
+`index.html(link ref)`:
+
+```html
+<link rel="stylesheet" href="styles.css">
+```
+
+现在看看app。看板、多英雄视图及导航链接，都有了样式了！
+
+![看板的头名英雄](images/dashboard-top-heroes.png)
+
+### 应用结构与代码
+
+请审阅本章[现场示例](https://angular.io/resources/live-examples/toh-5/ts/eplnkr.html)中的示例源代码。检查我们是否有着下面的文件结构：
+
+![第6部分的文件结构](images/file-structure-part-vii.png)
+
+### 回顾（Recap）
+
+#### 身后的路
+
+本章中我们走过了很大的距离（we travelled a great distance in this chapter）。
+
+- 为在不同组件之间进行导航，我们加入了Angular的*路由器*（the Angular *Router*）。
+- 学习了如何建立用于表示导航菜单条目的路由器链接（how to create router links to represent navigation menu items）。
+- 使用了路由器链接参数，来导航到用户所选英雄的详细信息。
+- 在多个组件之间，共享了`HeroService`。
+- 将HTML与CSS从组件文件中移除，并移入到其自己的文件中。
+- 加入了`uppercase`管道，用于数据格式化。
+- 将所有路由重构到一个导入的`Routing Module`中。
+
+#### 前面的路
+
+现在已经有了构建一个应用所需的大部分基础了。但我们仍缺少一个关键部分：远程数据访问（a key piece: remote data access）。
+
+下一章中，我们将使用获取自一台使用http的服务器的数据，来替换这里的模拟数据。
+
+## HTTP
+
+获取并保存数据（GETTING AND SAVING DATA）。
+
+这里将服务及那些组件加以转换，以使用到Angular的HTTP服务（Angular's HTTP service）。
 
 
