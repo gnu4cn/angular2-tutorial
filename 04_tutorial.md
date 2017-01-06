@@ -2559,4 +2559,194 @@ export class HeroesComponent implements OnInit {
 }
 ```
 
+刷新浏览器并开始点击。我们现在可在app中四处导航了，可以从看板到英雄详细信息并返回，从英雄清单到mini的相信信息到英雄详细信息，并再度返回到多英雄试图。还可以通过浏览器的前进后退按钮，在看板和多英雄试图之间跳转。
+
+现在已经满足了推动本章的那些导航方面的需求了。
+
+### 给应用加上样式（Styling the App）
+
+该app已具备了相应功能，但看起来相当的难看（the app is functional but pretty ugly）。我们的创意设计师团队（creative designer team）提供了一些将令其有更好观感的CSS文件。
+
+#### 有着样式的看板（a Dashboard with Style）
+
+设计师们认为，应以一行的矩形来显示看板。为此，他们已经给了我们大约60行的、包含了一些简单用于响应式设计的媒体查询的CSS（~60 lines of CSS for this purpose including some simple media queries for responsive design）。
+
+加入我们直接把这60行CSS代码粘贴到组件的`styles`元数据，这些代码将完全掩盖掉组件逻辑。所以我们不会那样做。在单独的`*.css`文件中编辑CSS也更为容易一些。
+
+将一个`dashboard.component.css`文件加入到`app`文件夹，并在组件元数据的`styleUrls`数组熟悉中像下面这样，对那个文件进行引用：
+
+`app/dashboard.component.ts(styleUrls部分)`：
+
+```typescript
+styleUrls: ['dashboard.component.css']
+```
+
+### 给英雄相信信息加上样式（Stylish Hero Details）
+
+设计师还给了我们特别用于`HeroDetailComponent`的CSS样式集。
+
+跟对`DashboardComponent`所做的一样，将一个`hero-detail.component.css`文件添加到`app`文件夹，并在`styleUrls`数组中对那个文件加以引用。同时还要将`hero`属性的`@Input`装饰器和其导入移除。
+
+`app/hero-detail.component.css`:
+
+```css
+label {
+  display: inline-block;
+  width: 3em;
+  margin: .5em 0;
+  color: #607D8B;
+  font-weight: bold;
+}
+input {
+  height: 2em;
+  font-size: 1em;
+  padding-left: .4em;
+}
+button {
+  margin-top: 20px;
+  font-family: Arial;
+  background-color: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer; cursor: hand;
+}
+button:hover {
+  background-color: #cfd8dc;
+}
+button:disabled {
+  background-color: #eee;
+  color: #ccc; 
+  cursor: auto;
+}
+```
+
+`app/dashboard.component.css`:
+
+```typescript
+[class*='col-'] {
+  float: left;
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+[class*='col-']:last-of-type {
+  padding-right: 0;
+}
+a {
+  text-decoration: none;
+}
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+h3 {
+  text-align: center; margin-bottom: 0;
+}
+h4 {
+  position: relative;
+}
+.grid {
+  margin: 0;
+}
+.col-1-4 {
+  width: 25%;
+}
+.module {
+  padding: 20px;
+  text-align: center;
+  color: #eee;
+  max-height: 120px;
+  min-width: 120px;
+  background-color: #607D8B;
+  border-radius: 2px;
+}
+.module:hover {
+  background-color: #EEE;
+  cursor: pointer;
+  color: #607d8b;
+}
+.grid-pad {
+  padding: 10px 0;
+}
+.grid-pad > [class*='col-']:last-of-type {
+  padding-right: 20px;
+}
+@media (max-width: 600px) {
+  .module {
+    font-size: 10px;
+    max-height: 75px; }
+}
+@media (max-width: 1024px) {
+  .grid {
+    margin: 0;
+  }
+  .module {
+    min-width: 60px;
+  }
+}
+```
+
+### 给导航链接加上样式
+
+设计师们给了我们将那些`AppComponent`导航链接，变得更像是可选择的按钮。我们与设计师们是通过将这些链接包含在`<nav>`标记中，进行合作的。
+
+加入一个有着下面内容的`app.component.css`文件到`app`文件夹中。
+
+`app/app.component.css(导航样式)`：
+
+```css
+h1 {
+  font-size: 1.2em;
+  color: #999;
+  margin-bottom: 0;
+}
+h2 {
+  font-size: 2em;
+  margin-top: 0;
+  padding-top: 0;
+}
+nav a {
+  padding: 5px 10px;
+  text-decoration: none;
+  margin-top: 10px;
+  display: inline-block;
+  background-color: #eee;
+  border-radius: 4px;
+}
+nav a:visited, a:link {
+  color: #607D8B;
+}
+nav a:hover {
+  color: #039be5;
+  background-color: #CFD8DC;
+}
+nav a.active {
+  color: #039be5;
+}
+```
+
+> **关于*RouterLinkActive*指令**
+> Angular路由器提供了一个`RouterLinkActive`指令，我们可使用该指令将某个类，添加给其路由与当前活动的路由匹配的HTML导航元素。那么我们必须做的就只有为其定义样式就行了。相当不错的指令（the Angular Router provides a `RouterLinkActive` directive we can use to add a class to the HTML navigation element whose route matches the active route. All we have to do is define the style for it. Sweet)!
+
+`app/app.component.ts(关于活动路由器链接)`：
+
+```typescript
+template: `
+  <h1>{{title}}</h1>
+  <nav>
+    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a routerLink="/heroes" routerLinkActive="active">Heroes</a>
+  </nav>
+  <router-outlet></router-outlet>
+`,
+```
+
+首先将`moduleId: module.id`加入到`AppComponent`的元数据，以启用*模块相关的（module-relative）*文件URLs（*译者注：*这里再度提到了`moduleId: module.id`，所以有必要搞清楚其到底是个什么东西, 可参考[这里](http://stackoverflow.com/questions/37178192/angular2-what-is-the-meanings-of-module-id-in-component)）。随后像下面这样，加入指向到该CSS文件的`styleUrls`属性。
+
+`app/app.component.ts(styleUrls部分)`：
+
+```typescript
+styleUrls: ['app.component.css'],
+```
 
