@@ -2742,11 +2742,12 @@ template: `
 `,
 ```
 
-首先将`moduleId: module.id`加入到`AppComponent`的元数据，以启用*模块相关的（module-relative）*文件URLs（*译者注：*这里再度提到了`moduleId: module.id`，所以有必要搞清楚其到底是个什么东西, 可参考[这里](http://stackoverflow.com/questions/37178192/angular2-what-is-the-meanings-of-module-id-in-component)）。随后像下面这样，加入指向到该CSS文件的`styleUrls`属性。
+首先将`moduleId: module.id`加入到`AppComponent`的元数据，以启用*模块相关的（module-relative）*文件URLs（*译者注：*这里再度提到了`moduleId: module.id`，所以有必要搞清楚其到底是个什么东西, 可参考[这里](http://stackoverflow.com/questions/37178192/angular2-what-is-the-meanings-of-module-id-in-component), 还有[这里](https://angular.io/docs/ts/latest/cookbook/component-relative-paths.html)）。随后像下面这样，加入指向到该CSS文件的`styleUrls`属性。
 
 `app/app.component.ts(styleUrls部分)`：
 
 ```typescript
 styleUrls: ['app.component.css'],
 ```
+
 
