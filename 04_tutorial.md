@@ -3129,4 +3129,245 @@ private handlError(error: any): Promise<any> {
     }
 ```
 
-`getHero`方法几乎与`getHeroes`一样。
+`getHero`方法几乎与`getHeroes`一样。通过将英雄id编码到URL中来匹配`api/hero/:id`模式，那个URL识别出服务器应对哪名英雄进行更新（the URL identifies *which* hero the server should update by encoding the hero id into the URL to match the `api/hero/:id` pattern）。
+
+同时我们还调整到在响应中的`data`是一个单个的英雄对象，而不再是一个数组了。
+
+#### 未改变的*getHeroes*API（unchanged *getHeroes* API）
+
+尽管上面我们对`getHeroes`及`getHero`做了显著的内部改变，但其公共的签名（the public signatures）却并未改变。两种方法所返回的都是一个Promise。所以我们不必对那些调用它们的组件，做任何的更新。
+
+到目前为止，有关方面对现在的web API集成都是很满意的。现在他们希望应用有着建立和删除英雄的能力。
+
+首先让我们看看在尝试更新某名英雄详细信息时，会发生什么吧。
+
+### 更新英雄相信信息（Update hero details）
+
+我们已经能在英雄详细信息视图对某名英雄的名字进行编辑了。请前去进行尝试。在我们输入时，在视图头部的英雄名字得以更新。但在点击`Back`按钮后，修改就丢失了！
+
+之前更新并没有丢失。那么有什么变化呢？在app使用一个模拟英雄清单时，更新是直接作用在那个单独的、app范围的、共享的清单中的英雄对象上的（updates were applied directly to the hero objects within the single, app-wide, shared list）。而现在是从一台服务器获取到的数据，如我们要令到修改留存，就需要将它们写回到服务器。
+
+#### 保存英雄详细信息
+
+下面就让我们来确保对某英雄名字的编辑不丢失。这里以在英雄详细信息模板的末尾，加入一个有着调用到（invokes）新的名为`save`组件方法，的`click`事件绑定的保存按钮开始（start by adding, to the end of the hero detail template, a save button with a `click` event binding that invokes a new component method named `save`）：
+
+`app/hero-detail.component.html(save)`:
+
+```html
+<button md-button (click)="save()">保存</button>
+```
+
+该`save`方法使用英雄服务的`update`方法，将英雄名字改变加以留存，并导航回先前的视图：
+
+```typescript
+    save(): void {
+        this.heroService.update(this.hero)
+            .then(() => this.goBack())
+    }
+```
+
+#### 英雄服务的`update`方法（Hero service `update` method）
+
+`update`方法的整体结构与`getHeroes`类似，不过我们使用了一个HTTP的*put*来留存服务端修改：
+
+`app/hero.service.ts(update方法)`：
+
+```typescript
+    private headers = new Headers({'Content-Type:': 'application/json'})
+    
+    update (hero: Hero): Promise<Hero> {
+        const url = `${this.heroesUrl}/${hero.id}`
+        
+        return this.http
+            .put(url, JSON.stringify(hero), { headers: this.headers})
+            .toPromise()
+            .then(() => hero)
+            .catch(this.handleError)
+    }
+```
+
+我们是通过将英雄id编码到URL中，来标识出哪名英雄应被更新的。这里的`put`体是该英雄的JSON编码字符串，通过调用`JSON.stringify`获取到的。在请求头部对`put`体的内容类型（`application/json`）进行了标识（the put body is the JSON string encoding of the hero, obtained by calling `JSON.stringify`. We identify the body content type(`application/json`) in the request header）。
+
+请刷新浏览器并加以尝试。对英雄名字的改变现在应可以留存了。
+
+### 加入一名英雄（Add a hero）
+
+要加入一名英雄，就需要知道英雄的名字。为此就要使用一个输入元素（an input element），以及一个加入按钮。
+
+将下面的HTML代码加入到多英雄组件的HTML中，作为头部后的第一个内容（first thing after the heading）:
+
+`app/heroes.component.html(英雄的加入)`：
+
+```html
+<div>
+    <label md-label>Hero name: </label>
+    <input md-input #heroName />
+    <button md-button (click)="add(heroName.value); heroName.value=''">
+        添加
+    </button>
+</div>
+```
+
+在对点击事件的响应中，我们调用到组件的点击处理器并于随后清除了输入字段，如此其便可用于另一个名字了。
+
+`app/heroes.component.ts(add方法)`：
+
+```typescript
+    add(name: String): void {
+        name = name.trim()
+        
+        if(!name) { return; }
+        
+        this.heroService.create(name)
+        .then(hero => {
+            this.heroes.push(hero)
+            this.selectedHero = null
+        })
+    }
+```
+
+在所给的名字不是空字符串时，该处理器将命名英雄的创建交给英雄服务，并于随后将新的英雄加入到数组中。
+
+最后，我们要实现`HeroService`类中的`create`方法。
+
+`app/hero.service.ts(create方法)`：
+
+```typescript
+    create(name: String): Promise<Hero> {
+        return this.http
+            .post(this.heroesUrl, JSON.stringify({name: name}), {headers: 
+            this.headers})
+            .toPromise()
+            .then(res => res.json().data)
+            .catch(this.handleError)
+    }
+```
+
+请刷新浏览器，并建立一些英雄吧！
+
+### 删除某名英雄（Delete a hero）
+
+有太多的英雄了吗？那么就让我们在多英雄视图中加入给每名英雄加上一个删除按钮吧。
+
+将下面这个按钮元素添加到多英雄组件HTML，在重复的`<li>`标记中的英雄名字右边。
+
+```html
+        <button class='delete' 
+                (click)="delete(hero); $event.stopPropagation()">x</button>
+```
+
+现在的`<li>`元素看起来应像下面这样：
+
+```html
+<md-list class="heroes">
+    <md-list-item *ngFor="let hero of heroes" (click)="onSelect(hero)"
+        [class.selected]="hero === selectedHero">
+        <span class="badge">{{hero.id}}</span>
+        <span>{{hero.name}}</span>
+        <button class='delete' 
+                (click)="delete(hero); $event.stopPropagation()">x</button>
+    </md-list-item>
+</md-list>
+```
+
+除了调用组件的`delete`方法外，该删除按钮的点击处理代码还阻止了该点击事件的进一步传播--我们不想要激发`<li>`的点击处理器，因为那将选择到我们即将删除的英雄（in addition to calling the component's `delete` method, the delete button click handling code stops the propagation of the click event -- we don't want the `li` click handler to be triggered because that would select the hero that we are going to delete）！
+
+这里的`delete`处理器逻辑是有些狡猾的（a bit trickier）：
+
+`app/heroes.component.ts(delete方法)`：
+
+```typescript
+    delete(hero: Hero): void {
+        this.heroService
+        .delete(hero.id)
+        .then(() => {
+            this.heroes = this.heroes.filter(h => h !== hero);
+            if ( this.selectedHero === hero ) { this.selectedHero = null }
+        })
+    }
+```
+
+理所当然，我们将英雄删除委托给英雄服务，但组件`HeroesComponent`仍要负责更新显示：其将删除的英雄从数组中移除，并在必要时重置所选的英雄（of course, we delegate hero deletion to the hero service, but the component is still responsible for updating the display: it removes the deleted hero from the array and resets the slected hero if necessary）。
+
+我们想要这里的删除按钮放在离英雄条目尽量远的右边。下面额外的CSS用于实现那个目的：
+
+`app/heroes.component.css(额外的CSS)`：
+
+```css
+button.delete {
+  float:right !important;
+  margin-top: 2px;
+  margin-right: .8em;
+  background-color: gray !important;
+  color:white;
+}
+```
+
+#### 英雄服务的`delete`方法（Hero service `delete` method）
+
+英雄服务的`delete`方法使用了*delete*这个HTTP方法，来从服务器移除英雄：
+
+`app/hero.service.ts(delete方法)`：
+
+```typescript
+    delete(id: Number): Promise<void> {
+        const url = `#{this.heroesUrl}/${id}`
+
+        return this.http.delete(url, { headers: this.headers })
+            .toPromise()
+            .then(() => null)
+            .catch(this.handleError)
+    }
+```
+
+请刷新浏览器，并尝试新的删除功能。
+
+### 关于Observables
+
+每个`Http`服务的方法，都返回一个HTTP`Repsonse`对象的`Observable`。
+
+我们的`HeroService`将那个`Observable`转换到一个`Promise`，并将该promise提供给调用者。在此部分我们学习了将该`Observable`直接进行返回，并讨论在何时及为何那样做将是要完成的一个良好事情（in this section we learn to return the `Observable` directly and discuss when and why that might be a good thing to do）。
+
+#### 背景知识
+
+一个*Observable*就是我们可使用一些像是数组操作符进行处理的事件流（an *observable* is a stream of events that we can process with array-like operators）。
+
+Angular核心有着对可观测量的基本支持。开发者通过[RxJS Observables](http://reactivex.io/rxjs/)库中的一些操作符和扩展，扩展了Angular对Observables的支持。下面将简要地看看是怎么实现的。
+
+请回忆一下这里的`HeroService`快速地将`toPromise`操作符链接到`http.get`结果的`Observable`上。那个操作符将该`Observable`转换成一个`Promise`，同时我们将该`Promise`传递回调用者。
+
+通常将`Observable`转换到promise都是好的选择。通常我们调用`http.get`是要取得一个单独的数据块。在接收到数据后，就完成了。而一个单独的promise形式的结果，对于调用其的组件对其进行消费是容易的，同时这样做对于promises可被JavaScript程序员广泛理解，也是有帮助的（we typically as `http.get` to fetch a single chunk of data. When we receive the data, we're done. A single result in the form of a promise is easy for the calling component to consume and it helps that promises are widely understood by JavaScript programmers）。
+
+但请求并非总是“一次就结束（one and done）”的。我们可能发起一次请求，随后有取消该次请求，并在服务器对第一次请求进行响应前，又发起一次不同的请求。这样的*request-cancel-new-request*序列，是难于以*Promises*进行实现的。下面我们将看到，在使用*Observables*进行实现时，就容易实现了。
+
+#### 以名字进行搜索（Search-by-name）
+
+我们将加入一个*英雄搜索*特性到英雄之旅。在用户键入一个名字到搜索框时，我们将发起重复的HTTP请求，来获取以那个名字进行过滤的英雄。
+
+我们以建立一个发送搜索查询的服务器web api的`HeroSearchService`开始。
+
+`app/hero-search.service.ts`
+
+```typescript
+import { Injectable } from '@angular/core'
+import { Http, Response } from '@angular/http'
+import { Observable } from 'rxjs'
+
+import { Hero } from './hero'
+
+@Injectable()
+export class HeroSearchService {
+    
+    constructor (private http: Http) {}
+    
+    search (term: String): Observable<Hero[]> {
+        const url = `app/heroes/?name=${term}`
+        
+        return this.http
+        .get(url)
+            .map((r: Response) => r.json().data as Hero[])
+    }
+}
+```
+
+
