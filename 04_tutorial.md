@@ -2832,4 +2832,281 @@ body, input[text], button {
 
 这里将服务及那些组件加以转换，以使用到Angular的HTTP服务（Angular's HTTP service）。
 
+有关方面对我们的进度表示认同。现在他们希望从服务器获取数据、让用户来添加、编辑并移除英雄（CRUD），同时将这些修改保存回服务器。
 
+本章我们教应用发起相应的到远端服务器web APIs的HTTP调用。
+
+请运行此部分的[现场示例](https://angular.io/resources/live-examples/toh-6/ts/eplnkr.html)。
+
+### 我们停留在何处（Where We Left off）
+
+在上一章中，我们学习了在看板及固定的英雄清单视图之间的导航，以及此过程中对选定英雄的编辑。那是本章开始的地方。
+
+#### 让应用保持transpiling及运行
+
+我们想要启动TypeScript编译器，让其监视文件变化，并启动服务器。通过敲入下面的命令来完成这个操作：
+
+```bash
+npm start
+```
+
+该命令将在我们持续构建英雄之旅应用时，保持应用的运行。
+
+### 提供HTTP服务（Providing HTTP Services）
+
+模块`HttpModule`***不***是一个核心的Angular模块。其作为Angular的一中可选的用于web访问的方法，同时其是一个名为`@angular/http`的独立附加组件模块存在、以作为Angular npm 包的一部分的一个单独脚本文件进行分发的（exists as a separate add-on module called `@angular/http`, shipped in a separate script file as part of the Angular npm package）。
+
+然而幸运的是，由于这里采用了`systemjs.config`所配置*SystemJS*来在我们需要时对那个库加以装入，所以可以直接从`@angular/http`导入到`HttpModule`（fortunately we're ready to import from `@angular/http` because `systemjs.config` configured *SystemJS* to load that library when we need, *译者注：*这里提到了*SystemJS*, 我们需要搞清楚其用途、用法及远离）。
+
+#### HTTP服务的注册（Register for HTTP services）
+
+我们的应用将依赖与Angular的`http`服务，而该服务自身又依赖于其它一些支持性服务。`@angular/http`库中的`HttpModule`就保存着一套完整的HTTP服务。
+
+我们应在应用的任何地方，能够访问到这些服务。因此要通过将`HttpModule`加入到`AppModule`的`imports`清单，而在`imports`清单那里，我们启动该应用机器根`AppComponent`（we should be able to access these services from anywhere in the application. So we register them all by adding `HttpModule` to the `imports` list of the `AppModule` where we bootstrap the application and its root `AppComponent`）。
+
+`app/app.module.ts(v1)`:
+
+```typescript
+import { NgModule } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser'
+import { FormsModule } from '@angular/forms'
+import { HttpModule } from '@angular/http'
+
+// 下面两个是 Angular 2 Materialize有关的导入
+import { MaterialModule } from '@angular/material'
+import 'hammerjs'
+
+import { AppRoutingModule } from './app-routing.module'
+
+import { AppComponent } from './app.component'
+import { DashboardComponent } from './dashboard.component'
+import { HeroDetailComponent } from './hero-detail.component'
+import { HeroesComponent } from './heroes.component'
+import { HeroService } from './hero.service'
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot(),
+        AppRoutingModule,
+        HttpModule
+    ],
+    providers: [
+        HeroService
+    ],
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent,
+        DashboardComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+请注意这里我们将`HttpModule`作为根NgModule`AppModule`的*imports*数组的一部分，提供到了`HttpModule`（notice that we supply `HttpModule` as part fo the *imports* array in root NgModule `AppModule`）。
+
+### 对web API进行模拟（Simulating the web API）
+
+建议在根`AppModule`的*providers*数组中，对应用层面的那些服务进行注册（we recommend registering application-wide services in the root `AppModule` *providers*）。
+
+我们的应用还是处于开发的早期阶段，且离准备好投入生产还有很长的距离。我们甚至都还没有一台可以处理英雄请求的web服务器。在有了服务器之前，我们*将不得不弄一台假的*（*we'll have to fake it*）。
+
+我们将*诱骗*HTTP客户端来从一个假的服务，也就是*内存中的web API*获取并保存数据（we're going to *trick* the HTTP client to fetching and saving data from a mock service, the *in-memory web API*）。
+
+下面就是完成这个把戏的`app/app.module.ts`版本：
+
+`app/app.module.ts(v2)`:
+
+```typescript
+import { NgModule } from '@angular/core'
+import { BrowserModule } from '@angular/platform-browser'
+import { FormsModule } from '@angular/forms'
+import { HttpModule } from '@angular/http'
+
+// 装入并配置内存web api的导入（imports for loading&configuring the in-memory web api）
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api'
+import { InMemoryDataService } from './in-memory-data.service'
+
+// 下面两个是 Angular 2 Materialize有关的导入
+import { MaterialModule } from '@angular/material'
+import 'hammerjs'
+
+import { AppRoutingModule } from './app-routing.module'
+
+import { AppComponent } from './app.component'
+import { DashboardComponent } from './dashboard.component'
+import { HeroDetailComponent } from './hero-detail.component'
+import { HeroesComponent } from './heroes.component'
+import { HeroService } from './hero.service'
+
+@NgModule({
+    imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule.forRoot(),
+        InMemoryWebApiModule.forRoot(InMemoryDataService)
+        AppRoutingModule,
+        HttpModule
+    ],
+    providers: [
+        HeroService
+    ],
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent,
+        DashboardComponent
+    ],
+    bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+本示例通过加入`InMemoryWebApiModule`到模块`imports`，来模拟与远端服务器的通信，以有效地以内存方案，来替换`Http`客户端的XHR（XMLHttpRequest）后端服务，而不是需要一台真实的API服务器（rather than require a real API server, this example simulates communication with the remote server by adding the `InMemoryWebApiModule` to the module `imports`, effectively replacing the `Http` client's XHR backend service with an in-memory alternative）。
+
+```typescript
+InMemoryWebApiModule.forRoot(InMemoryDataService)
+```
+
+这里的`forRoot`配置方法，取得下面这样的一个用于准备好内存数据库的`InMemoryDataService`类：
+
+`app/in-memory-data.service.ts`:
+
+```typescript
+import { InMemoryDbService } from 'angular-in-memory-web-api'
+
+export class InMemoryDataService implements InMemoryDbService {
+    createDb() {
+        let heroes = [
+            { id: 11, name: 'Mr. Nice' },
+            { id: 12, name: 'Narco' },
+            { id: 13, name: 'Bombasto' },
+            { id: 14, name: 'Celeritas' },
+            { id: 15, name: 'Magneta' },
+            { id: 16, name: 'RubberMan' },
+            { id: 17, name: 'Dynama' },
+            { id: 18, name: 'Dr IQ' },
+            { id: 19, name: 'Magma' },
+            { id: 20, name: 'Tornado' }
+        ]
+        
+        return { heroes }
+    }
+}
+```
+
+该文件取代了`mock-heroes.ts`, 那么现在就可以安全地删除它了。
+
+> 本章是对Angular的HTTP库的介绍。所以请不要被此后端替代分散精力。只需跟着示例继续就行了。
+> 在[HTTP客户端]()章节可了解更多有个内存web API的有关知识。请记住，内存web API只在应用开发的早期阶段及像英雄之旅这样的演示中是有用的。在有了真实的web API服务器中就要跳过其的使用。
+
+### 英雄与HTTP（Heroes and HTTP）
+
+请看看当前的`HeroService`实现：
+
+```typescript
+getHeroes(): Promise<Hero[]> {
+    return Promise.resolve(HEROES)
+}
+```
+
+我们返回了一个用模拟英雄所解决的Promise。这样做在当初看起来似乎有些过头，但那时我们有期望有一天会以使用一个HTTP客户端的方式来获取多英雄，且那时我们知道英雄的获取必定将以异步操作的方式进行（we returned a Promise resolved with mock heroes. It may have seemed like overkill at the time, but we anticipating the day when we fetched heroes with an HTTP client and we know that would have to be an asynchronous operation）。
+
+所期望的那天现在已经到来！让我们吧`getHeroes()`转换为使用`HTTP`的方式吧。
+
+`app/hero.service.ts(对getHeroes进行更新，并新建一些类成员)`
+
+```typescript
+  private heroesUrl = 'api/heroes';  // URL to web api
+
+  constructor(private http: Http) { }
+
+  getHeroes(): Promise<Hero[]> {
+    return this.http.get(this.heroesUrl)
+               .toPromise()
+               .then(response => response.json().data as Hero[])
+               .catch(this.handleError);
+  }
+
+  private handleError(error: any): Promise<any> {
+    console.error('An error occurred', error); // for demo purposes only
+    return Promise.reject(error.message || error);
+  }
+```
+
+现在`hero.service.ts`中导入语句如下：
+
+`app/hero.service.ts(更新后的导入语句)`：
+
+```typescript
+import { Injectable } from '@angular/core'
+import { Headers, Http } from '@angular/http'
+
+import 'rxjs/add/operator/toPromise'
+
+import { Hero } from './hero'
+```
+
+刷新浏览器，应能成功地从模拟服务器装入英雄数据。
+
+#### 关于HTTP的Promise（HTTP Promise）
+
+这里仍然返回的是一个Promise，但我们是以不同方式创建出的。
+
+Angular的`http.get`返回的是一个RxJS（Reactive Extensions for JavaScript, JavaScript的响应式扩展，可参考[RxJS初体验](https://www.w3ctech.com/topic/1298)）的`Observable`。*Observables*是一种管理异步数据流的强大方式。本章后面将对`Observables`进行学习。
+
+*现在*我们以立即使用`RxJS`的`toPromise`方法，将那个`Observable`转换到一个`Provise`方式，回到我们熟知的地方。
+
+```typescript
+.toPromise()
+```
+
+不幸的是，Angular的`Observable`对象并没有`toPromise`操作符...，`toPromise`并不是Angular的`Observable`自带的。Angular的`Observable`只是一个基本的实现。
+
+不过仍然有着数不清的像是`toPromise`这样的将`Observable`扩展出有用能力的操作符。在我们想要这些能力时，就必须自己加入这些操作符。而那也是很简单的，如下面这样从RxJS库中导入即可：
+
+```typescript
+import 'rxjs/add/operator/toPromise'
+```
+
+#### 在*then*回调函数中提取数据（Extract the data in the *then* callback）
+
+在*promise*的`then`回调函数中，我们调用了HTTP `Response`的`json`方法，来提取响应中的数据。
+
+```typescript
+.then(response => response.json().data as Hero[])
+```
+
+那个响应的JSON有着一个单独的`data`熟悉。该`data`熟悉就保存着调用者所需的*英雄*数组。如此，我们就抽取到该数组，并将其作为一个解决的Promise值，加以返回。
+
+> 请密切留意有服务器所返回的数据的外形。此特定的内存web API（in-memory web API）示例所返回的是一个有着`data`属性的对象（JSON）。而你自己的API则可能返回一些别的东西。所以需要对该代码加以修改，以适配你自己的web API。
+
+调用者是不会在意这些诡计的。其就像之前一样会接收到一个多英雄的Promise。其并不知道我们是从真实服务器，或者假的服务器获取数据的。其对其中的过程一无所知，而只需将HTTP响应转换成多英雄（it knows nothing of the twists and turns required to convert the HTTP response into heroes）。这就是程序之美所在，同时也是将数据访问任务交给像是`HeroService`这个服务的目的所在。
+
+
+#### 错误处理（Error Handling）
+
+在`getHeroes()`方法的最后，我们对服务器失效进行了`catch`，同时将这些错误传递给了一个错误处理器（an error handler）：
+
+```typescript
+.catch(this.handleError)
+```
+
+这是非常重要的一步！因为那些超出我们掌控的一些原因而总是会发生，所以我们必须假设会出现这些HTTP失效。
+
+```typescript
+private handlError(error: any): Promise<any> {
+    private handleError(error: any): Promise<any> {
+    console.error('An error ocurred', error)
+    return Promise.reject(error.message || error)   
+}
+```
+
+在此示例中，我们将错误记录到控制台；在现实中，需要将错误处理做得更好。
+
+我们还决定以一个拒绝的promise, 将一个用户友好形式的错误，返回给调用者, 如此调用者便可以显示一个合适的错误消息给用户（we've decided to return a user friendly form of the error to the caller in a rejected promise so that the caller can display a proper error message to the user）。
+
+#### 
