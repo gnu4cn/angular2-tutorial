@@ -3101,12 +3101,32 @@ import 'rxjs/add/operator/toPromise'
 private handlError(error: any): Promise<any> {
     private handleError(error: any): Promise<any> {
     console.error('An error ocurred', error)
-    return Promise.reject(error.message || error)   
+    return Promise.reject(error.message || error);   
 }
 ```
+
 
 在此示例中，我们将错误记录到控制台；在现实中，需要将错误处理做得更好。
 
 我们还决定以一个拒绝的promise, 将一个用户友好形式的错误，返回给调用者, 如此调用者便可以显示一个合适的错误消息给用户（we've decided to return a user friendly form of the error to the caller in a rejected promise so that the caller can display a proper error message to the user）。
 
-#### 
+#### 通过id获取英雄（get hero by id）
+
+组件`HeroDetailComponent`询问`HeroService`来获取到单个英雄加以编辑。
+
+当前的`HeroService`获取所有英雄，并随后通过过滤与匹配`id`的那名, 找到所要的英雄。在模拟中这样做没问题。但在我们只需要一名英雄时，去询问服务器请求所有英雄，就有些浪费了。而大多数的web APIs都以`api/hero/:id`（比如`api/hero/11`）这种形式，支持*get-by-id*的请求。
+
+采用刚学到的编写`getHeroes`的知识，对`getHero`方法加以更新，以发起一个*get-by-id*的请求：
+
+```typescript
+    getHero(id: Number): Promise<Hero> {
+        const url = `${this.heroesUrl}/${id}`
+        
+        return this.http.get(url)
+            .toPromise()
+            .then(response => response.json().data as Hero)
+            .catch(this.handleError)
+    }
+```
+
+`getHero`方法几乎与`getHeroes`一样。
