@@ -3326,7 +3326,7 @@ button.delete {
 
 每个`Http`服务的方法，都返回一个HTTP`Repsonse`对象的`Observable`。
 
-我们的`HeroService`将那个`Observable`转换到一个`Promise`，并将该promise提供给调用者。在此部分我们学习了将该`Observable`直接进行返回，并讨论在何时及为何那样做将是要完成的一个良好事情（in this section we learn to return the `Observable` directly and discuss when and why that might be a good thing to do）。
+我们的`HeroService`将那个`Observable`转换到一个`Promise`，并将该promise提供给调用者。在此部分我们要学习将该`Observable`直接进行返回，并讨论在何时及为何那样做将是要完成的一个良好事情（in this section we learn to return the `Observable` directly and discuss when and why that might be a good thing to do）。
 
 #### 背景知识
 
@@ -3365,9 +3365,280 @@ export class HeroSearchService {
         
         return this.http
         .get(url)
-            .map((r: Response) => r.json().data as Hero[])
+        .map((r: Response) => r.json().data as Hero[])
     }
 }
 ```
 
+这里`HeroService`中的`http.get()`调用，与先前`HeroService`中的类似，虽然现在的URL有着一个查询字串。另一个显著的不同在于：我们不再调用`toPromise`了，而是简单地返回该*observable*。
 
+#### HeroSearchComponent
+
+下面让我们来建立一个新的对这个心的`HeroSearchService`进行调用的`HeroSearchComponent`。
+
+该组件的模板较为简单--仅包含一个文本框和一个匹配结果的列表。
+
+`app/hero-search.component.html`:
+
+```html
+<div id="search-component">
+    <h4>英雄搜索</h4>
+    <md-input-container>
+        <input md-input #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+    </md-input-container>
+    <div>
+        <div *ngFor="let hero of heroes | async"
+            (click)="gotoDetail(hero)" class="search-result">
+            {{hero.name}}
+        </div>
+    </div>
+</div>
+```
+
+同时我们也希望为新组件加上一些样式。
+
+`app/hero-search.component.css`:
+
+```css
+.search-result{
+  border-bottom: 1px solid gray;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  width:195px;
+  height: 20px;
+  padding: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+#search-box{
+  width: 200px;
+  height: 20px;
+}
+```
+
+当用户在搜索框中进行输入时，*keyup*这个事件绑定以那个新的搜索框的值，对组件的`search`方法进行调用。
+
+`*ngFor`就组件的`heroes`属性，来重复*hero*对象。这里没有什么惊喜的地方。
+
+不过就如我们很快将要看到的，这里的`heroes`属性现在是一个英雄数组的*可观测量（Observable）*，而不再仅仅是一个数组了。在我们将该可观测量经由`async`管道（`AsyncPipe`）流入之前，`*ngFor`什么也干不了。`async`管道是订阅到该`Observable`的，同时产生提供给`*ngFor`的英雄数组。
+
+现在是时候建立这个`HeroSearchComponent`类及其元数据了。
+
+`app/hero-search.component.ts`
+
+```typescript
+import { Component, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
+import { Observable } from 'rxjs/Observable'
+import { Subject } from 'rxjs/Subject'
+
+import { HeroSearchService } from './hero-search.service'
+import { Hero } from './hero'
+
+@Component({
+    moduleId: module.id,
+    selector: 'hero-search',
+    templateUrl: 'hero-search.component.html',
+    styleUrls: ['hero-search.component.css'],
+    providers: [HeroSearchService]
+})
+
+export class HeroSearchComponent implements OnInit {
+    heroes: Observable<Hero[]>
+    private searchTerms = new Subject<String>()
+
+    constructor(
+        private heroSearchService: HeroSearchService,
+        private router: Router
+    ) { }
+    
+    // 推送一个搜索词汇进可观测量流。
+    // Push a search term into the observable stream.
+    
+    search(term: String): void {
+        this.searchTerms.next(term)
+    }
+    
+    ngOnInit(): void {
+        this.heroes = this.searchTerms
+            .debounceTime(300) 
+            //在事件中等待300ms，wait for 300ms pause in events
+            .distinctUntilChanged() 
+            // 如下一搜索词与前一个相同时加以忽略，
+            // ignore if next search term is same as previous
+            .switchMap(
+                // 每次都交换到一个新的可观测量，switch to new observable each time
+                term => term 
+                ? this.heroSearchService.search(term)
+                // 返回http搜索可观测量，return the http search observable
+                : Observable.of<Hero[]>([]))
+                // 或者在没有搜索词时，返回空英雄的可观测量，or the observable of empty heroes if no search term
+            .catch(error => {
+                // 后续要做的：实际的错误处理逻辑，TODO: real error handling
+                console.log(error)
+                return Observable.of<Hero[]>([])
+            })
+    }
+    
+    gotoDetail (hero: Hero): void {
+        let link = ['/detail', hero.id];
+        this.router.navigate(link)
+    }
+}
+```
+
+#### 关于搜索词（SEARCH TERMS）
+
+现在让我们来着重于这里的`searchTerms`:
+
+```typescript
+private searchTerms = new Subject<string>();
+
+// Push a search term into the observable stream.
+search(term: string): void {
+  this.searchTerms.next(term);
+}
+```
+
+`Subject`是一个*可观测量*事件流的生产者（a `Subject` is a producer of an *observable* event stream）；`searchTerms`生产出一个字符串的`Observable`，作为名字搜索的过滤条件。
+
+每次到`search`方法的调用，都将一个新的字符串，通过调用其`next`方法，放入到该主题的`observable`流中（each call to `search` puts a new string into this subject's *observable* stream by calling `next`）。
+
+#### 对*HEROES*属性的初始化（INITIALIZE THE HEROES PROPERTY(NGONINIT)）
+
+一个`Subject`同时也是一个`Observable`。我们将要将搜索词的流，转换为一个`Hero`数组的流，并将结果指派给`heroes`属性。
+
+```typescript
+    heroes: Observable<Hero[]>
+    
+    ngOnInit(): void {
+        this.heroes = this.searchTerms
+            .debounceTime(300) 
+            //在事件中等待300ms，wait for 300ms pause in events
+            .distinctUntilChanged() 
+            // 如下一搜索词与前一个相同时加以忽略，
+            // ignore if next search term is same as previous
+            .switchMap(
+                // 每次都交换到一个新的可观测量，switch to new observable each time
+                term => term 
+                ? this.heroSearchService.search(term)
+                // 返回http搜索可观测量，return the http search observable
+                : Observable.of<Hero[]>([]))
+                // 或者在没有搜索词时，返回空英雄的可观测量，or the observable of empty heroes if no search term
+            .catch(error => {
+                // 后续要做的：实际的错误处理逻辑，TODO: real error handling
+                console.log(error)
+                return Observable.of<Hero[]>([])
+            })
+    }
+```
+
+这里加入将用户的每次按键都直接传递给`HeroSearchService`，那将发起一场HTTP请求风暴。因此那是不好的做法。我们不想要加重服务器负担，且不愿耗尽移动数据套餐。
+
+幸运的是，我们可以将一些降低请求流的可观测量`Observable`操作符，连接到字符串的可观测量上。这样就可以在仍能获取到及时结果的情况下，对`HeroSearchService`发起更少的调用。下面是其工作原理：
+
+- `debounceTime(300)`，在新字符串事件流暂停300毫秒后，才传递最新的字符串。因此这里绝不会以高于300毫秒的频率发起查询。
+- `distinctUntilChanged`，确保只有在过滤文本改变时，才发出一个请求。重复某个同样的搜索词的请求是没有意义的。
+- `switchMap`, 对已通过`debounce`和`distictUntilChanged`考验的每个搜索词，来调用搜索服务。其取消并丢弃先前的搜索`observables`，仅返回最新的搜索服务observable。
+
+> 这个[`switchMap` 操作符](http://www.learnrxjs.io/operators/transformation/switchmap.html)（也就是老早所熟知的“flatMapLatest”）是非常聪明的。
+> 所有合格的按键事件，都能激发一个`http`方法调用。就算在请求之间有着300ms的暂停，也可能出现多个在途的HTTP请求，且这些请求也不一定按照先后顺序返回。
+> `switchMap`保存了最初的请求顺序，同时确保仅返回自最近的`http`方法调用的`Observable`。那些先前调用的结果被取消并被丢弃。
+> 同时在搜索文本为空时，我们对`http`方法调用进行了短路处理，从而返回一个包含空数组的`Observable`。
+> 请注意除非服务支持中止等待的HTTP请求特性，否则*取消*`HeroSearchService`的`Observable`并不会实际地中止等待的查询，而该特性则是另一日的话题了。现在我们关注的是丢弃那些不想要的结果（note that *canceling* the `HeroSearchService` observable won't actually abort  a pending HTTP request until the service supports that feature, a topic for another day. We are content for now to discard unwanted results）。
+
+- `catch` 操作符对失败的observable进行拦截。这个简单示例将错误打印到控制台；而在实际生活中的应用，应在错误处理上做得更好。随后我们返回一个包含了空数组的`Observable`，以清空搜索结果。
+
+#### 导入RxJS的操作符
+
+在Angular的基本`Observable`实现中，这些RxJS操作符是不可用的。所以必须通过将这些操作符*加以导入*，以对`Observable`进行扩展。
+
+我们可只就那些这里所需要的一些必要的操作符，而在文件顶部包含相关的必要`import`语句，而对`Observable`进行扩展。
+
+> 许多权威方面都说我们应这么做。
+
+而在此示例中，我们采取了不同的方式。我们结合了*整个应用*所需的所有的RxJS的`Observable`扩展，到一个单独的RxJS导入文件中（we combine all of the RxJS `Observable` extensions that *our entire app* requires into a single RxJS imports file）。
+
+`app/rxjs-extensions.js`
+
+```typescript
+// Observable 类的扩展
+import 'rxjs/add/observable/of'
+import 'rxjs/add/observable/throw'
+
+// Observable 操作符
+import 'rxjs/add/operator/catch'
+import 'rxjs/add/operator/debounceTime'
+import 'rxjs/add/operator/distinctUntilChanged'
+import 'rxjs/add/operator/do'
+import 'rxjs/add/operator/filter'
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/switchMap'
+```
+
+我们一次性地在`AppModule`的顶部，通过导入`rxjs-extensions`将这些扩展加以导入。
+
+`app/app.module.ts(rxjs-extensions部分)`
+
+```typescript
+import './rxjs-extensions'
+```
+
+#### 将搜索组件加入到看板
+
+这里将英雄搜索的HTML元素，添加到`DashboardComponent`模板的底部。
+
+`app/dashboard.component.html`
+
+```html
+<h3>Top Heroes</h3>
+<md-grid-list cols="4">
+    <md-grid-tile *ngFor="let hero of heroes" [routerLink]="['/detail', hero.id]">
+        <div class="module hero">
+            <h4>{{hero.name}}</h4>
+        </div>
+    </md-grid-tile>
+</md-grid-list>
+<hero-search></hero-search>
+```
+
+最后，我们从`hero-search.component.ts`导入`HeroSearchComponent`，并将其加入到`declarations`数组：
+
+`app/app.module.ts(search部分)`
+
+```typescript
+    declarations: [
+        AppComponent,
+        HeroesComponent,
+        HeroDetailComponent,
+        DashboardComponent,
+        HeroSearchComponent
+    ],
+```
+
+请再度运行app，前往到*看板*, 并在搜索框中输入一些文字。在某一时刻，应用看起来会是这样的。
+
+![英雄之旅的英雄搜索](images/toh-hero-search.png)
+
+### 应用文件结构与代码
+
+请在本章的[现场示例]()中对示例源代码进行检查。确认我们有着以下的文件结构：
+
+![第七部分的文件结构](images/file-structure-part-viii.png)
+
+### 冲刺阶段（Home Stretch）
+
+现在我们已到了旅途的终点了，不过我们完成了很多目标啊。
+
+- 我们加入了在应用中使用HTTP的那些必要的依赖关系。
+- 重构了`HeroService`，以从某个web API装入到英雄数据。
+- 扩展了`HeroService`，以支持`post`、`put`及`delete`方法。
+- 对多个组件进行了更新，以允许英雄的加入、编辑和删除。
+- 配置好了一个内存web API（an in-memory web API）。
+- 学习了如何使用Observables
+
+下面是在本章中曾加入或修改过的文件（略）。
+
+### 下一步
+
+请回到[学习路径](0201_learning_angular.md)，那里可读到更多关于本教程中所发现的一些概念与实践方面的内容。
