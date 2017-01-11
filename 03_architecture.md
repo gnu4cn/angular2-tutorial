@@ -110,9 +110,9 @@ Angular的模块系统和JavaScript模块系统，是两个不同的且互补的
 
 ### Angular的那些库（Angular libaries）
 
-![库模块](images/libary-module.png)
+![库模块](images/library-module.png)
 
-Angular是以一个JavaScript模块集合形式发布的（Angular ships as a collection of JavaScript modules）。可将这些JavaScript模块想作是一些库模块（libary modules）。
+Angular是以一个JavaScript模块集合形式发布的（Angular ships as a collection of JavaScript modules）。可将这些JavaScript模块想作是一些库模块（library modules）。
 
 每个Angular的库的名字，都以`@angular`前缀开头。
 
@@ -144,3 +144,102 @@ imports: [ BrowserModule ]
 
 
 ## <a name="components"></a>组件
+
+![英雄组件](images/hero-component.png)
+
+*组件*控制了名为*视图*的一片屏幕（a *component* controls a patch of screen called a *view*）。
+
+比如，以下视图是被组件所控制的：
+
+- 带有导航链接的应用根视图。
+- 英雄清单视图。
+- 英雄编辑器视图。
+
+在类中定义出某个组件的应用逻辑--应用逻辑所做的，就是支持视图。通过属性与方法的API，该类与其视图进行交互（you define a component's application logic -- whate it does to support the view -- inside a class. The class interacts with the view through an API of properties and methods）。
+
+比如，这个`HeroListComponent`有着一个返回从某个服务出请求到的英雄数组的`heroes`属性。同时`HeroListComponent`还有一个在用户从清单点击选择某名英雄时，对`selectedHero`属性进行设置的`selectHero()`方法。
+
+`app/hero-list.component.ts(类的部分)`
+
+```typescript
+export class HeroListComponent implements OnInit {
+    heroes: Hero[]
+    selectedHero: Hero
+
+    constructor (private service: HeroService) {}
+
+    ngOnInit () {
+        this.heroes = this.service.getHeroes ()
+    }
+
+    selectHero (hero: Hero) { this.selectedHero = hero }
+}
+```
+
+Angular是随用户在应用中移动，而创建、更新与销毁组件的。通过像是上面所声明的`ngOnInit()`这样的可选[生命周期钩子（lifecycle hooks）](（you define a component's application logic -- whate it does to support the view -- inside a class）)，应用可在此生命周期中的各个时刻，执行一些动作（Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional lifecycle hooks, like `ngOnInit()` declared above）。
+
+## 模板（Templates）
+
+![模板](template.png)
+
+在定义组件视图时，是与其相伴的*模板*一同定义的。模板就是告诉Angular如何来渲染组件的一种HTML形式。除了少许的不同之外，模板看起来就像常规的HTML。下面就是一个`HeroListComponent`的模板：
+
+`app/hero-list.component.html`
+
+```html
+<h2>Hero List</h2>
+<p><i>Pick a hero from the list</i></p>
+<ul>
+  <li *ngFor="let hero of heroes" (click)="selectHero(hero)">
+    {{hero.name}}
+  </li>
+</ul>
+<hero-detail *ngIf="selectedHero" [hero]="selectedHero"></hero-detail>
+```
+
+虽然该模板使用了一些典型的像是`<h2>`及`<p>`这样的HTML元素，但其还有一些不同之处。比如`*ngFor`、`{{hero.name}}`、`(click)`、`[hero]`以及`<hero-detail>`这样的代码，使用到了Angular的[模板语法](https://angular.io/docs/ts/latest/guide/template-syntax.html)。
+
+而`HeroDetailComponent`则是与上面所回顾到的`HeroListComponent`组件，有所*不同*的组件。`HeroDetailComponent`（这里没有显示其代码）展示的是某位用户从由`HeroListComponent`展示清单所选的特定英雄信息。那么`HeroDetailComponent`就是`HeroListComponent`组件的一个*子*组件。
+
+![组件树](images/component-tree.png)
+
+请注意这里的`<hero-detail>`是如何在那些原生的HTML元素之间，舒适地躺在那里的。定制组件可与原生HTML在同一布局中无缝地混合（notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts）。
+
+### 关于元数据（Metadata）
+
+![元数据](images/metadata.png)
+
+元数据告诉Angular如何来对某个类进行处理（Metadata tells Angular how to process a class）。
+
+请看看上面的`HeroListComponent`中的代码，可以看到该组件仅是一个类。不存在框架的影子，组建中没有一点的“Angular”（there is no evidence of a framework, no "Angular" in it at all）。
+
+事实上，`HeroListComponent`真的就只是一个*类*。在*告诉Angular有关该类*之前，它还不是一个组件（it's not a component until you *tell Angular about it*）。
+
+而要告诉Angular `HeroListComponent`是一个组件，就要将**元数据**附加到该类。
+
+在TypeScript中，是通过使用*装饰器*来附加上元数据的。下面是`HeroListComponent`的一些元数据：
+
+`app/hero-list.component.ts(元数据部分)`：
+
+```typescript
+@Component({
+  moduleId: module.id,
+  selector:    'hero-list',
+  templateUrl: 'hero-list.component.html',
+  providers:  [ HeroService ]
+})
+export class HeroListComponent implements OnInit {
+/* . . . */
+}
+```
+
+这里的`@Component`装饰器，将下面与其紧接着的类，标识为一个组件类（here is the `@Component` decorator, which identifies the class immediately below it as a component class）。
+
+该`@Component`装饰器取得一个要求的、有着Angulary用于创建并展示组件及组件视图所需信息的配置对象（the `@Component` decorator takes a required configuration object with the information Angular needs to create and present the component and its view）。
+
+一下是几个可能的`@Component`配置选项：
+
+- `moduleId`: 对诸如`templateUrl`这样的模块相对URLs的基本地址（`module.id`）源进行设置（sets the source of the base address(`module.di`) for module-relative URLs such as the `templateUrl`）。
+- `selector`: 指明告诉Angular在*父*HTML中找到`<hero-list>`标签的地方，创建并插入该组件的一个实例的CSS选择器（CSS selector that tells Angular to create and insert an instance of this component where it finds a `<hero-list>` tag in *parent* HTML）。比如，在某个app的HTML中包含了`<hero-list></hero-list>`时，Angular就将`HeroListComponent`视图的一个实例，在这些标记之间加以插入。
+- `templateUrl`: 该组件的HTML模板的模块相对地址（module-relative address）, 如上面所示。
+- `providers`: 指明组件所要求的那些服务的**依赖注入提供者**的数组（array of **dependency injection providers** for services that the component requires）。
