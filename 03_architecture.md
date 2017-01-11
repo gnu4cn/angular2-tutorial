@@ -9,7 +9,7 @@ Angular是一个以HTML及JavaScript或像是TypeScript这样的编译到JavaScr
 
 通过编写带有Angular化标记的HTML*模板*, 及管理这些模板的*组件*类，和在*服务*中加入应用逻辑，并将这些组件与服务装箱到*模块*中，就可以编写出Angular应用了（you write Angular applications by composing HTML *templates* with Angularized markup, writing *component* classes to manage those templates, adding application logic in *services*, and boxing components and services in *modules*）。
 
-随后通过*启动根模块*，来启动应用（then you launch the app by *bootstrapping* the *root module*）。此时Angular便接管过来，在浏览器中呈现出应用内容，并通过你所提供的指令，对用户交互进行响应。
+随后通过*引导根模块*，来启动应用（then you launch the app by *bootstrapping* the *root module*）。此时Angular便接管过来，在浏览器中呈现出应用内容，并通过你所提供的指令，对用户交互进行响应。
 
 当然，实际上比上面所说的要复杂得多。在随后的本页中，你将了解到那些细节。现在请着重于大的图景。
 
@@ -75,4 +75,72 @@ export class AppModule {}
 
 > 这里`AppComponent`的`export`仅是作为展示如何来导出；在本示例中并不是必要的。根模块没有任何理由去*导出*什么，因为其它组件并不需要*导入*根模块（a root module has no reason to *export* anything because other components don't need to *import* the root module, *译者注：* 对与根模块是这样，那么对于特性模块还是这样吗? 这个问题留待以后分析）。
 
+通过*引导（bootstrapping）*应用的根模块，来启动某个应用。在开发过程中，很可能是在一个像下面这样的`main.ts`文件中，对`AppModule`加以引导。
 
+`app/main.ts`
+
+```typescript
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+import { AppModule } from './app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+### Angular模块与JavaScript模块的比较
+
+Angular模块--一个用`@NgModule`装饰了的类--是Angular的一项基本特性（a fundamental feature）。
+
+JavaScript也有着其自己的、用于管理JavaScript对象集合的模块系统（JavaScript also has its own module system for managing collections of JavaScript objects）。然而JavaScript的模块系统与Angular的模块系统是完全不同的，二者没有一点关系。
+
+在JavaScript中，每个*文件*就是一个模块，且所有定义在那个文件中的对象，都属于那个模块。模块通过把定义的对象用`export`关键字标记出来，而将这些标记的对象声明为公共对象（the module declares some objects to be public by marking them with the `export` key word）。其它JavaScript对象使用*`import`语句*，来访问别的模块中的公共对象。
+
+```typescript
+import { NgModule }     from '@angular/core';
+import { AppComponent } from './app.component';
+```
+
+```typescript
+export class AppModule { }
+```
+
+> 请在web上了解更多有关JavaScript模块系统有关的知识。
+
+Angular的模块系统和JavaScript模块系统，是两个不同的且互补的模块系统。请同时两套系统来编写apps。
+
+### Angular的那些库（Angular libaries）
+
+![库模块](images/libary-module.png)
+
+Angular是以一个JavaScript模块集合形式发布的（Angular ships as a collection of JavaScript modules）。可将这些JavaScript模块想作是一些库模块（libary modules）。
+
+每个Angular的库的名字，都以`@angular`前缀开头。
+
+使用**npm**包管理器（the **npm** package manager）来安装这些Angular的库, 并使用JavaScript的`import`语句，来导入这些库的部分。
+
+比如，像下面这样从`@angular/core`库，导入Angular的`Component`装饰器：
+
+```typescript
+import { Component } from '@angular/core'
+```
+
+而从Angular*库*中导入Angular的模块，也是使用JavaScript的导入语句：
+
+```typescript
+import { BrowserModule } from '@angular/platform-browser'
+```
+
+在上面的简单根模块中的示例中，该应用模块就需要那个`BrowserModule`中的原料（the application module needs material from within that `BrowserModule`）。而要访问到那个原料，就要像下面这样，将其加入到`@NgModule`的元数据`imports`中。
+
+```typescript
+imports: [ BrowserModule ]
+```
+
+这样做，就可以*一起*使用到Angular及JavaScript的模块系统了。
+
+因为两种模块系统共用了通用的“imports”及“exports”列表，所以很容易搞混这两套系统。请坚持下去，这种困惑会随时间和经验的增长，而得到澄清（Hang in there. The confusion yields to clarity with time and experience）。
+
+> 请从[Angular 模块](https://angular.io/docs/ts/latest/guide/ngmodule.html)页面了解更多有关此方面的内容。
+
+
+## <a name="components"></a>组件
