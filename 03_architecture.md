@@ -298,4 +298,176 @@ Angular支持*数据绑定*特性，这种将模板的多个部分，与组件�
 
 ![指令](images/directive.png)
 
+Angular的模板是*动态的（dynamic）*。在Angular渲染这些模板时，它会按照*指令*所给的指示，对DOM进行转换（Angular templates are *dynamic*. When Angular renders them, it transforms the DOM according to the instructions given by *directives*）。
+
+指令是有着`@Directive`装饰器的类。那么组件就是一个*有着一个模板的指令*了；而`@Component`装饰器，实际上就是扩展了一些面向模板特性的`@Directive`装饰器了（a directive is a class with a `Directive` decorator. A component is a *directive-with-a-template*; a `@Component` decorator is actually a `@Directive` decorator extended with template-oriented features）。
+
+> 尽管**组件从技术上讲是一个指令**，但因为组件是如此独特，且对于Angular应用的中心地位，所以此架构概览将组件从指令中独立开来。
+
+又有着*其它*两种类型的指令：*结构*及*属性*指令（*structual* and *attribute* directives）。
+
+这两种指令倾向于出现在某个元素标记内部，就如HTML元素的属性那样，少数时候作为名称出现，而更多的时候则是作为某个赋值或绑定的目标出现（they tend to appear within an element tag as attributes do, sometimes by name but more often as the target of an assignment or a binding）。
+
+*结构*指令通过加入、移除及替换DOM中的元素，实现对布局的改变（**structual** directives alter layout by adding, removing, and replacing elements in DOM）。
+
+下面的示例模板，使用了两个内建的结构指令：
+
+`app/hero-list.component.html(结构方面)`：
+
+```html
+<li *ngFor="let hero of heroes"></li>
+<hero-detail *ngIf="selectedHero"></hero-detail>
+```
+
+- `*ngFor`告诉Angular对`heroes`清单中的每名英雄，复刻出一个`<li>`。
+- `*ngIf`仅在存在一名选定英雄时，包含`HeroDetail`子组件
+
+**属性**指令则是对一个既有元素的外观或行为，进行修改（**Attribute** directives alter the appearance or behavior of an existing element）。在模板中，它们与常规HTML属性看起来无异，因此有着属性指令的叫法。
+
+而实现双向数据绑定的`ngModel`指令，就是属性指令的示例。`ngModel`通过设置某个既有元素（通常是一个`<input>`）的显示值属性，及对变化事件的响应，而实现对既有元素行为进行修改。
+
+`app/hero-detail.component.html(ngModel部分)`
+
+```html
+<input [(ngModel)]="hero.name" \>
+```
+
+Angular还有着少数几个其它的要么对布局结构加以修改（比如`ngSwitch`）、要么对DOM元素及组件的一些方面进行修改（比如`ngStyle`及`ngClass`）的指令。
+
+当然，还可以编写自己的指令。诸如`HeroListComponent`这样的组件，就是定制指令的一种类型（components such as `HeroListComponent` are one kind of custom directive）。
+
+## 服务（Services）
+
+服务是一个包含了任何应用所需的值、函数，或特性的一个大的类别（a broad category encompassing any value, function, or feature that your application needs）。
+
+尽管任何东西都可以是一个服务。但服务通常是有着窄的、良好定义目的的一个类。其应做一些特定的事情，并能完成得很好。
+
+一些服务示例如下：
+
+- 日志服务（logging service）
+- 数据服务（data service）
+- 消息总线（message bus）
+- 税额计算器（tax calculator）
+- 应用配置（application configuration）
+
+对于服务来讲，*Angular*并没有什么特别的地方。Angular没有服务的定义。没有服务的基类，也没有注册服务的地方（there is nothing specifically *Angular* about services. Angular has no definition of a service. There is no service base class, and no place to register a service）。
+
+但服务对于任何Angular应用来说，都是基本的。组件就是服务的大头消费者（yet services are fundamental to any Angular application. Components are big consumers of services）。
+
+下面是一个记录到浏览器控制台的服务类的示例：
+
+`app/logger.service.ts(作为类)`：
+
+```typescript
+export class Logger {
+    log(msg: any) { console.log(msg) }
+    erro(msg: any) { console.error(msg) }
+    warn(msg: any) { console.warn(msg) }
+}
+```
+
+下面的`HeroService`获取英雄并将他们以一个解决的Promise加以返回。该`HeroService`依赖于`Logger`服务及另一个处理服务器通信繁重事务的`BackendService`（the `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work）。
+
+`app/hero.service.ts(类的部分)`：
+
+```typescript
+export class HeroService {
+    private heroes: Hero[] = []
+
+    constructor (
+        private backend: BackendService,
+        private logger: Logger
+    ){}
+
+    getHeroes () {
+        this.backend.getAll(Hero)
+            .then(
+                (heroes: Hero[]) => {
+                    this.logger.log(`Fetched ${heroes.length} heroes.`)
+                    this.heroes.push(...heroes)
+                }
+            )
+        return this.heroes
+    }
+}
+```
+
+服务无处不在。
+
+组件类应是精益的（component classes should be lean）。它们不从服务器获取数据、验证用户输入，或是直接记录到控制台。它们将此类任务托付给服务。
+
+组件的工作，就是保证用户体验，而不应干得更多。组件在视图（为模板所渲染）和应用逻辑（其通常包含一些*模型*概念）之间进行协调。良好组件展示出用于数据绑定的属性与方法。将所有不那么简单的事务，都托付给服务（it mediates between the view(rendered by the template) and the application logic(which often includes some notion of *model*). A good component presents properties and methods for data binding. It delegates everything nontrivial to services）。
+
+不过Angular并不*强制*这些原则。就算你写了3000行的琐碎组件，它也不会抱怨什么（Angular doesn't *enforce* these principles. It won't complain if you write a "kichen sink" component with 3000 lines）。
+
+但Angular以易于将应用逻辑分解到服务中去，并通过*依赖注入*而领导这些服务对组件可用的方式，来帮助你*依循*这些原则。
+
+## 依赖注入（dependency injection）
+
+![依赖注入](images/dependency-injection.png)
+
+*依赖注入*是一种以其所要求的完整依赖，来提供到某个类的新实例的方式（*dependency injection* is a way to supply a new instance of a class with the fully-formed dependencies it requires）。大多数的依赖都是服务。Angular使用依赖注入，来为新组件提供它们所需的服务。
+
+Angular可通过查看组件的（组件的）构建器参数，就可以说出组件所需哪个服务（Angular can tell which services a component needs by looking at the types of its constructor parameters）。比如，`HeroListComponent`组件的构建器需要一个`HeroService`：
+
+`app/hero-list.component.ts(构建器部分)`
+
+```typescript
+constructor ( private service: HeroService ) {}
+```
+
+**译者注：** 可以看出，Angular中构建器，constructor一词, 是一个专用词，指的是组件涉及依赖注入时，从导入的服务类构建一个服务实例的方法。
+
+在Angular建立一个组件时，它首先就该组件所要求的服务，对某个**注入器**进行询问。
+
+**译者注：**可以看出，Angular的依赖注入，是结合到元数据中的`providers`项，及构建器完成的，而这里所指的注入器，则目前不知为何物。
+
+注入器维护着其先前所建立的服务实例的容器（an injector maintains a container of service instances that it has previously created）。如某个请求的服务实例不再容器中，注入器就制造出一个来，并在将该服务返回给Angular之前，将其加入到容器中。在所有请求的服务都已被解决并返回后，Angular就可以这些服务作为参数，对组件的构建器进行调用。这就是*依赖注入*。
+
+`HeroService`的注入过程，看起来有点像下面这个图示：
+
+![注入器注入](images/injector-injects.png)
+
+而加入注入器没有一个`HeroService`，那么它怎么知道怎样来制作一个呢？
+
+简言之，你先前就必须已使用注入器，注册了`HeroService`的一个**提供者**（in brief, you must have previously registered a **provider** of the `HeroService` with the injector）。而提供者是某种能建立或返回一个服务的东西，通常就是该服务类本身。
+
+可在模块或组件中，注册一些提供者。
+
+一般而言，请将提供者加入到[根模块]()，如此某个服务的相同实例，就在应用的所有地方可用了。
+
+`app/app.module.ts(模块的提供者部分)`：
+
+```typescript
+providers: [
+    BackendService,
+    HeroService,
+    Logger
+]
+```
+
+另外就是在组件级别`@Component`元数据的`providers`属性中注册：
+
+`app/hero-list.component.ts(组件的提供者部分)`：
+
+```typescript
+@Component({
+    moduleId: module.id,
+    selector: 'hero-list',
+    templateUrl: 'hero-list.component.html',
+    providers: [ HeroService ]
+})
+```
+
+在组件级别的注册，意味着那个组件的每个新实例，都将得到一个该服务的新实例。
+
+要记住以下的有关依赖注入的几点：
+
+- 依赖注入是接入到Angular框架中的，同时在所有地方都有用到（dependency injection is wired into the Angular framework and used everywhere）。
++ *注入器*是主要机制（the *injector* is the main mechanism）。
+    - 注入器维护着其所建立的服务实例的*容器*（an injector maintains a *container* of service instances that it created）。
+    - 注入器可从某个*提供者*，建立某个新的服务实例。
+- *提供者*是建立某个服务的配方（a *provider* is a recipe for creating a service）。
+- 使用注入器来注册*提供者*（register *providers* with injectors）。
+
 
