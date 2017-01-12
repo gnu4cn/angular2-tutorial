@@ -242,4 +242,60 @@ export class HeroListComponent implements OnInit {
 - `moduleId`: 对诸如`templateUrl`这样的模块相对URLs的基本地址（`module.id`）源进行设置（sets the source of the base address(`module.di`) for module-relative URLs such as the `templateUrl`）。
 - `selector`: 指明告诉Angular在*父*HTML中找到`<hero-list>`标签的地方，创建并插入该组件的一个实例的CSS选择器（CSS selector that tells Angular to create and insert an instance of this component where it finds a `<hero-list>` tag in *parent* HTML）。比如，在某个app的HTML中包含了`<hero-list></hero-list>`时，Angular就将`HeroListComponent`视图的一个实例，在这些标记之间加以插入。
 - `templateUrl`: 该组件的HTML模板的模块相对地址（module-relative address）, 如上面所示。
-- `providers`: 指明组件所要求的那些服务的**依赖注入提供者**的数组（array of **dependency injection providers** for services that the component requires）。
+- `providers`: 指明组件所要求的那些服务的**依赖注入提供者**的数组（array of **dependency injection providers** for services that the component requires）。这是告诉Angular该组件的构建器，需要`HeroService`才能获取到要显示的英雄清单的一种方式（this is one way to tell Angular that the component's constructor requires a `HeroService` so it can get the list of heroes to display, *译者注：*这里说是一种方式，那么还有别的方式，那就是在`AppModule`的`providers`中全局性地指明服务，随后就无需在组件`providers`中再指明，而可以直接导入使用了）。
+
+![模板-元数据-组件](images/template-metadata-component.png)
+
+`@Component`中的元数据，告诉Angular从哪里获取指定给该组件的那些构建块（the metadata in the `@Component` tells Angular where to get the major building blocks you specify for the component）。
+
+模板、元数据及组件一起，对视图进行描述（the template, metadata, and component together describe a view）。
+
+以同样方式来应用其它的一些元数据的装饰器，来引导Angular的行为（apply other metadata decorators in a similar fashion to guide Angular behavior）。而`@Injectable`、`@Input`及`@Output`则是几个较为常用的装饰器。
+
+架构上告诉我们，必须要将元数据加入到代码，如此Angular才知道要做些什么（the architectural takeaway is that you must add metadata to your code so that Angular knows what to do）。
+
+## 数据绑定（Data binding）
+
+在无框架时，就要自己去负责将数据的值推入到HTML控件，并将用户响应转换成动作和数值的更新。亲历亲为地编写这样的推/拉逻辑，是单调乏味的、容易出错且读起来也是一场噩梦，那些老练的jQuery程序员可以证明这一切（without a framework, you would be responsible for pushing data values into the HTML controls and turning user reponses into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to read as any experienced jQuery programmer can attest）。
+
+![数据绑定](images/databinding.png)
+
+Angular支持*数据绑定*特性，这种将模板的多个部分，与组件的多个部分结合起来的机制。通过将绑定标记添加到模板的HTML，来告诉Angular如何将两端连接起来（Angular supports **data binding**, a mechanism for coordinating parts of a template with parts of a component. Add binding markup to the template HTML to tell Angular how to connect both sides）。
+
+如上面的图例所示，有着4种形式的数据绑定语法。每种形式都有一个方向 -- 到DOM的、从DOM的，或双向的。
+
+上面的`HeroListComponent`示例模板，有着3种形式的数据绑定：
+
+```html
+<li>{{hero.name}}</li>
+<hero-detail [hero]="selectedHero"></hero-detail>
+<li (click)="selectHero(hero)"></li>
+```
+
+- `{{hero.name}}`这个[插值表达式（interpolation）](https://angular.io/docs/ts/latest/guide/displaying-data.html#interpolation)在`<li>`元素里头显示出组件的`hero.name`属性值。
+- 而`[hero]`这个[属性绑定（property bindin）]()则将父组件`HeroListComponent`的`selectedHero`属性的值，传递给子组件`HeroDetailComponent`的`hero`属性。
+- `(click)`这个[事件绑定（event binding）]()，则在用户点击某名影响名字时，调用组件的`selectHero`方法。
+
+**双向数据绑定**是重要的第四种形式，其将属性与事件绑定，使用`ngModel`指令，结合在一个符号中（**Two-way data binding** is an important fourth form that combines property and event binding in a single notaion, using the `ngModel` directive）。下面就是一个`HeroDetailComponent`模板中的示例:
+
+`app/hero-detail.component.html(ngModel部分)`：
+
+```typescript
+<input [(ngModel)]="hero.name" />
+```
+
+在双向绑定中，某个数据属性值从组件以属性绑定方式流入到输入框中。而用户的修改同样流回到组件，以事件绑定方式，将那个属性重置到最新的值（in two-way binding, a data property value flows to the input box from the component as with property binding. The user's changes also flow back to the component, resetting the property to the latest value, as with event binding）。
+
+对于每个JavaScript的事件周期，Angular会对从应用组件树的根, 贯穿到所有子组件的*所有*数据绑定加以处理（Angular processes *all* data bindings once per JavaScript event cycle, from the root of the application component tree through all child components）。
+
+![组件的数据绑定](images/component-databinding.png)
+
+在模板与其组件的通信中，数据绑定扮演了重要角色。
+
+数据绑定对于父组件与子组件之间的通信，也是尤为重要的。
+
+## 指令（Directives）
+
+![指令](images/directive.png)
+
+
