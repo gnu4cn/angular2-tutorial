@@ -180,7 +180,7 @@ Angular是随用户在应用中移动，而创建、更新与销毁组件的。�
 
 ## 模板（Templates）
 
-![模板](template.png)
+![模板](images/template.png)
 
 在定义组件视图时，是与其相伴的*模板*一同定义的。模板就是告诉Angular如何来渲染组件的一种HTML形式。除了少许的不同之外，模板看起来就像常规的HTML。下面就是一个`HeroListComponent`的模板：
 
