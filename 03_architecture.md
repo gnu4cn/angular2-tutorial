@@ -495,6 +495,4 @@ providers: [
 - [生命周期钩子](https://angular.io/docs/ts/latest/guide/lifecycle-hooks.html)：通过部署一些生命周期钩子接口，而对从组件的建立到销毁的生命周期中的一些关键点加以利用（tap into key moments in the lifecycle of a component, from its creation to its destrucion, by implementing the lifecycle hook interfaces）。
 - [管道](https://angular.io/docs/ts/latest/guide/pipes.html)：在模板中使用管道，通过为显示目的而将一些值进行变形处理，来改进用户体验。比如下面的这个`currency`管道表达式：`price | currency: 'USD': true`。其将一个`42.33`的价格，显示为`$42.33`。
 - [路由器](https://angular.io/docs/ts/latest/guide/router.html)：在客户端应用内部实现页面到页面的导航，且绝不会脱离浏览器。
-- [测试](https://angular.io/docs/ts/latest/guide/testing.html)：使用*Angular的测试平台*，在应用的一些部件上允许单元测试，因为这些部件有着与Angular框架的交互（run unit tests on your application parts as they interact with the Angular framework using the *Angular Testing Platform*）。
-
-
+- [测试](https://angular.io/docs/ts/latest/guide/testing.html)：在应用的一些部件上允许单元测试，因为这些单元测试通过*Angular测试平台*，与Angular框架有着交互（run unit tests on your application parts as they interact with the Angular framework using the *Angular Testing Platform*）。
