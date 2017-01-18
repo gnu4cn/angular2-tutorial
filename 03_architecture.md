@@ -470,4 +470,31 @@ providers: [
 - *提供者*是建立某个服务的配方（a *provider* is a recipe for creating a service）。
 - 使用注入器来注册*提供者*（register *providers* with injectors）。
 
+## 总结（wrap up）
+
+我们已经学习了Angular应用的8个主要构建块的基本知识：
+
+- 模块
+- 组件
+- 模板
+- 元数据
+- 数据绑定
+- 指令
+- 服务
+- 依赖注入
+
+这些是Angular应用其它方面的基础，同时对于开始编写Angular应用已绰绰有余了。但这并未包含你需要知道的全部内容。
+
+下面是一个其它重要的Angular特性及服务的简要的、以字母顺序排序的清单。本文档涵盖了其中的大多数（其它也将很快写出来）。
+
+- [动画（**Animations**）](https://angular.io/docs/ts/latest/guide/animations.html)：使用Angular的动画库，在无需深入的动画技巧或CSS的情况下，令到组件行为动起来（Animate component behavior without deep knowledge of animation techniques or CSS with Angular's animation library）。
+- 变化探测（**change detection**）：变化探测文档将涉及Angular如何判断某个组件的属性值已发生改变、何时去更新屏幕，以及如何使用区域（**zones**）来拦截异步活动并运行其变化探测策略（the change detection documentation will cover how Angular decides that a component property value has changed, when to update the screen, and how it uses **zones** to intercept asynchronous activity and run its change detection strategies）。
+- 事件（**events**）：事件文档将涉及怎样在一些机制下，使用组件与服务来提升事件，以实现事件的发布与订阅（the events documentation will cover how to use components and services to raise events with mechanisms for publishing and subscribing to events）。
+- [表单（**forms**）](https://angular.io/docs/ts/latest/guide/forms.html)：表单库通过基于HTML的验证与规则检查，而支持复杂的数据输入场景（support complex data entry scenarios with HTML-based validation and dirty checking）。
+- [HTTP](https://angular.io/docs/ts/latest/guide/server-communication.html)：通过HTTP客户端，与服务器进行通信，以获取数据、保存数据，及发起服务端的动作（communicate with a server to get data, save data, and invoke server-side actions with an HTTP client）。
+- [生命周期钩子](https://angular.io/docs/ts/latest/guide/lifecycle-hooks.html)：通过部署一些生命周期钩子接口，而对从组件的建立到销毁的生命周期中的一些关键点加以利用（tap into key moments in the lifecycle of a component, from its creation to its destrucion, by implementing the lifecycle hook interfaces）。
+- [管道](https://angular.io/docs/ts/latest/guide/pipes.html)：在模板中使用管道，通过为显示目的而将一些值进行变形处理，来改进用户体验。比如下面的这个`currency`管道表达式：`price | currency: 'USD': true`。其将一个`42.33`的价格，显示为`$42.33`。
+- [路由器](https://angular.io/docs/ts/latest/guide/router.html)：在客户端应用内部实现页面到页面的导航，且绝不会脱离浏览器。
+- [测试](https://angular.io/docs/ts/latest/guide/testing.html)：使用*Angular的测试平台*，在应用的一些部件上允许单元测试，因为这些部件有着与Angular框架的交互（run unit tests on your application parts as they interact with the Angular framework using the *Angular Testing Platform*）。
+
 
