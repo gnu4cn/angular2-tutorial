@@ -9,7 +9,7 @@
 英雄之旅涵盖了Angular的一些核心基础知识点。
 - 这里将用到一些内建的指令（built-in directives），来显示或隐藏页面元素，以及英雄数据清单的显示。
 - 将建立一个组件来现实英雄详细信息，并建立另一个组件，来显示一个英雄的数组（an array of heroes）。
-- 对于那些只读数据（read-only data）, 这里将使用单项数据绑定（one-way data binding）。
+- 对于那些只读数据（read-only data）, 这里将使用单向数据绑定（one-way data binding）。
 - 将加入可编辑字段，来对带有双向数据绑定的某个模型加以更新（add editable fields to update a model with two-way data binding）。
 - 这里将把一些组件方法，绑定到注入按键及鼠标点击这样的用户事件（bind component methods to user events like key strokes and clicks）。
 - 将学习从某个主清单中选择一个英雄，并在详情视图中加以编辑（learn to select a hero from a master list and edit that hero in the details view）。
