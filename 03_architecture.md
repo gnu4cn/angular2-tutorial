@@ -273,8 +273,8 @@ Angular支持*数据绑定*特性，这种将模板的多个部分，与组件�
 ```
 
 - `{{hero.name}}`这个[插值表达式（interpolation）](https://angular.io/docs/ts/latest/guide/displaying-data.html#interpolation)在`<li>`元素里头显示出组件的`hero.name`属性值。
-- 而`[hero]`这个[属性绑定（property bindin）]()则将父组件`HeroListComponent`的`selectedHero`属性的值，传递给子组件`HeroDetailComponent`的`hero`属性。
-- `(click)`这个[事件绑定（event binding）]()，则在用户点击某名影响名字时，调用组件的`selectHero`方法。
+- 而`[hero]`这个[属性绑定（property binding）]()则将父组件`HeroListComponent`的`selectedHero`属性的值，传递给子组件`HeroDetailComponent`的`hero`属性。
+- `(click)`这个[事件绑定（event binding）]()，则在用户点击某名英雄名字时，调用组件的`selectHero`方法。
 
 **双向数据绑定**是重要的第四种形式，其将属性与事件绑定，使用`ngModel`指令，结合在一个符号中（**Two-way data binding** is an important fourth form that combines property and event binding in a single notaion, using the `ngModel` directive）。下面就是一个`HeroDetailComponent`模板中的示例:
 
