@@ -239,7 +239,7 @@ export class HeroListComponent implements OnInit {
 
 以下是几个可能的`@Component`配置选项：
 
-- `moduleId`: 对诸如`templateUrl`这样的模块相对URLs的基本地址（`module.id`）源进行设置（sets the source of the base address(`module.di`) for module-relative URLs such as the `templateUrl`）。
+- `moduleId`: 对诸如`templateUrl`这样的模块相对URLs的基本地址（`module.id`）源进行设置（sets the source of the base address(`module.id`) for module-relative URLs such as the `templateUrl`）。
 - `selector`: 指明告诉Angular在*父*HTML中找到`<hero-list>`标签的地方，创建并插入该组件的一个实例的CSS选择器（CSS selector that tells Angular to create and insert an instance of this component where it finds a `<hero-list>` tag in *parent* HTML）。比如，在某个app的HTML中包含了`<hero-list></hero-list>`时，Angular就将`HeroListComponent`视图的一个实例，在这些标记之间加以插入。
 - `templateUrl`: 该组件的HTML模板的模块相对地址（module-relative address）, 如上面所示。
 - `providers`: 指明组件所要求的那些服务的**依赖注入提供者**的数组（array of **dependency injection providers** for services that the component requires）。这是告诉Angular该组件的构建器，需要`HeroService`才能获取到要显示的英雄清单的一种方式（this is one way to tell Angular that the component's constructor requires a `HeroService` so it can get the list of heroes to display, *译者注：*这里说是一种方式，那么还有别的方式，那就是在`AppModule`的`providers`中全局性地指明服务，随后就无需在组件`providers`中再指明，而可以直接导入使用了）。
