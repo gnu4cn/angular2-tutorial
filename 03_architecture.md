@@ -235,9 +235,9 @@ export class HeroListComponent implements OnInit {
 
 这里的`@Component`装饰器，将下面与其紧接着的类，标识为一个组件类（here is the `@Component` decorator, which identifies the class immediately below it as a component class）。
 
-该`@Component`装饰器取得一个要求的、有着Angulary用于创建并展示组件及组件视图所需信息的配置对象（the `@Component` decorator takes a required configuration object with the information Angular needs to create and present the component and its view）。
+该`@Component`装饰器取得一个要求的、有着Angular用于创建并展示组件及组件视图所需信息的配置对象（the `@Component` decorator takes a required configuration object with the information Angular needs to create and present the component and its view）。
 
-一下是几个可能的`@Component`配置选项：
+以下是几个可能的`@Component`配置选项：
 
 - `moduleId`: 对诸如`templateUrl`这样的模块相对URLs的基本地址（`module.id`）源进行设置（sets the source of the base address(`module.di`) for module-relative URLs such as the `templateUrl`）。
 - `selector`: 指明告诉Angular在*父*HTML中找到`<hero-list>`标签的地方，创建并插入该组件的一个实例的CSS选择器（CSS selector that tells Angular to create and insert an instance of this component where it finds a `<hero-list>` tag in *parent* HTML）。比如，在某个app的HTML中包含了`<hero-list></hero-list>`时，Angular就将`HeroListComponent`视图的一个实例，在这些标记之间加以插入。
