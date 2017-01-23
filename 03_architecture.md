@@ -211,7 +211,7 @@ Angular是随用户在应用中移动，而创建、更新与销毁组件的。�
 
 元数据告诉Angular如何来对某个类进行处理（Metadata tells Angular how to process a class）。
 
-请看看上面的`HeroListComponent`中的代码，可以看到该组件仅是一个类。不存在框架的影子，组建中没有一点的“Angular”（there is no evidence of a framework, no "Angular" in it at all）。
+请看看上面的`HeroListComponent`中的代码，可以看到该组件仅是一个类。不存在框架的影子，组件中没有一点的“Angular”（there is no evidence of a framework, no "Angular" in it at all）。
 
 事实上，`HeroListComponent`真的就只是一个*类*。在*告诉Angular有关该类*之前，它还不是一个组件（it's not a component until you *tell Angular about it*）。
 
