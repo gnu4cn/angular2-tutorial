@@ -157,7 +157,7 @@ imports: [ BrowserModule ]
 
 在类中定义出某个组件的应用逻辑--应用逻辑所做的，就是支持视图。通过属性与方法的API，该类与其视图进行交互（you define a component's application logic -- whate it does to support the view -- inside a class. The class interacts with the view through an API of properties and methods）。
 
-比如，这个`HeroListComponent`有着一个返回从某个服务出请求到的英雄数组的`heroes`属性。同时`HeroListComponent`还有一个在用户从清单点击选择某名英雄时，对`selectedHero`属性进行设置的`selectHero()`方法。
+比如，这个`HeroListComponent`有着一个返回从某个服务处请求到的英雄数组的`heroes`属性。同时`HeroListComponent`还有一个在用户从清单点击选择某名英雄时，对`selectedHero`属性进行设置的`selectHero()`方法。
 
 `app/hero-list.component.ts(类的部分)`
 
