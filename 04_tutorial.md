@@ -539,7 +539,7 @@ EXCEPTION: TypeError: Cannot read property 'name' of undefined in [null]
 
 现在可以在下面的详细信息区域看到所选的英雄了，但在上面的清单中却无法快速找到那名英雄。通过将`selected`CSS类应用到主清单中适当`<li>`上，就可以修正这个问题。比如，在选择了英雄清单中的Magneta时，可通过赋予其一个如下所示的些许不同的背景色，而令其从视觉上冒出来。
 
-![已选择的英雄清单](images/heros-list-selected.png)
+![已选择的英雄清单](images/heroes-list-selected.png)
 
 这里将把一个的绑定在`class`上的到CSS类`selected`的属性，加入到模板（we'll add a property binding on `class` for the `selected` class）。将把此绑定设置为一个将当前的`selectedHero`与模板输入变量`hero`进行比较的表达式。
 
