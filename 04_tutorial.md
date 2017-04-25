@@ -454,7 +454,7 @@ styles: [`
 </md-list-item>
 ```
 
-请关注这里的时间绑定：
+请关注这里的事件绑定：
 
 ```html
 (click)="onSelect(hero)"
