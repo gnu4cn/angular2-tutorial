@@ -750,7 +750,7 @@ export class HeroDetailComponent {}
 
 ### 英雄详细信息模板（Hero Detail Template）
 
-此时，*多个英雄及英雄详细信息*的那些视图，还是结合在`AppComponent`的同一模板中的。那么就让我们从`AppComponent`中将*英雄详细信息*，**剪切（cut）**下来，并**粘贴（paste）**到新的`HeroDetailComponent`的模板属性中去吧。
+此时，*多个英雄及英雄详细信息*的那些视图，还是结合在`AppComponent`的同一模板中的。那么就让我们从`AppComponent`中将*英雄详细信息*，**剪切（cut）** 下来，并 **粘贴（paste）** 到新的`HeroDetailComponent`的模板属性中去吧。
 
 前面我们对`AppComponent`的`selectedHero.name`进行了绑定。而`HeroDetailComponent`将有一个`hero`属性，而不是`selectedHero`属性。因此在新的模板中，要将`selectedHero`用`hero`加以替换。那是仅有的修改了。结果看起来像下面这样：
 
